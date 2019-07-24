@@ -3,3 +3,67 @@
     margin: 0;
     padding: 0;
 }
+
+$font-default: 'Roboto', sans-serif;
+$dur: 0.3s;
+$ease: ease;
+
+body {
+    font-family: $font-default;
+}
+
+$mildGreen: #C9FFBF;
+$mildPink: #FFAFBD;
+$white: #fff;
+$black: #000;
+
+.wrap {
+    max-width: 1280px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 25px;
+}
+
+.header__tabs-btn, .header__tabs-country {
+    border: 0;
+    padding: 12px 25px;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 5px;
+    background-color: transparent;
+    color: $black;
+    font-family: $font-default;
+}
+
+.header__tabs-country {
+    border: 2px solid $mildGreen;
+    .loaded & {
+        transition: background-color $dur $ease, border $dur $ease, color $dur $ease, box-shadow $dur $ease;
+    }
+    &:hover {
+        background-color: $mildPink;
+        border: 2px solid $mildPink;
+        color: $white;
+        box-shadow: 0px 0px 10px 0px rgba($black, 0.2);
+    }
+}
+
+.header__tabs-btn {
+    background-color: $mildGreen;
+    position: relative;
+    .loaded & {
+        transition: box-shadow $dur $ease;
+    }
+    &:hover {
+        box-shadow: 0px 0px 10px 0px rgba($black, 0.5);
+    }
+}
