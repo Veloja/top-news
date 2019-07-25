@@ -8,6 +8,9 @@
     display: flex;
     justify-content: space-between;
     padding: 10px 25px;
+    z-index: 10;
+    background-color: $white;
+    box-shadow: 0px 5px 20px 0px rgba($black, 0.35);
 }
 
 .header__tabs-btn, .header__tabs-country {
@@ -26,6 +29,9 @@
     .loaded & {
         transition: background-color $dur $ease, border $dur $ease, color $dur $ease, box-shadow $dur $ease;
     }
+    &.header__tabs-country--active {
+        background-color: $mildPink;
+    }
     &:hover {
         background-color: $mildPink;
         border: 2px solid $mildPink;
@@ -37,6 +43,9 @@
 .header__tabs-btn {
     background-color: $mildGreen;
     position: relative;
+    &.header__tabs-btn--active {
+        background-color: $mildPink;
+    }
     .loaded & {
         transition: box-shadow $dur $ease;
     }

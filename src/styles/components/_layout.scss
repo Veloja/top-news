@@ -1,6 +1,30 @@
+@import 'components/variables';
+
+body {
+    margin-top: 150px;
+}
+
 .wrap {
     max-width: 1280px;
     width: 100%;
     padding: 0 20px;
     margin: 0 auto;
+}
+
+.content {
+    display: none;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid $black;
+    height: auto;
+    &.content--active {
+        display: block;
+    }
+}
+
+#news {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 20px;
 }
