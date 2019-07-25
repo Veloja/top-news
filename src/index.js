@@ -35,10 +35,61 @@ async function getArticles() {
     })
     console.log(state);
     renderNews(state);
+    attachOpenPopupListener();
+}
+
+function attachOpenPopupListener() {
+    const divs = document.querySelectorAll('.news__item-link');
+
+    divs.forEach(link => {
+        link.parentElement.addEventListener('click', openPopup);
+    })
+}
+
+function openPopup() {
+
+    let title = '';
+    let img = '';
+    let desc = '';
+
+    const clickedPopupID = this.getAttribute('data-item');
+    console.log(clickedPopupID, 'id');
+
+    state.news.filter((item, index) => {
+        if(index === +clickedPopupID) {
+            title = item.title;
+            img = item.urlToImage;
+            desc = item.content;
+        }
+    });
+
+    const popup = document.createElement('div')
+    popup.className += 'popup'
+    popup.innerHTML = `
+        <div class="popup__wrap">
+            <h5 class="popup__title">${title}</h5>
+            <div class="popup__image">
+                <img class="popup__img" src="${img}" />
+            </div>
+            ${
+                !desc
+                    ? ''
+                    :  `<p class="popup__desc">${desc}</p>`
+            }
+            <button class="popupClose">back</button>
+        </div>
+    `
+    document.body.appendChild(popup);
+    backBtn = document.querySelector('.popupClose');
+    backBtn.addEventListener('click', closePopup)
+}
+
+let backBtn = ''
+function closePopup() {
+    const tet = this.closest('.popup').remove();
 }
 
 gbBtn.click();
-renderNews()
 
 function renderNews() {
     news.innerHTML = `
