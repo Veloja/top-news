@@ -1,0 +1,24 @@
+@import 'components/variables';
+
+.search {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    h2 {
+        margin-bottom: 35px;
+    }
+}
+
+.search__input {
+    display: block;
+    border: 1px solid $black;
+    padding: 15px 25px;
+    font-size: 14px;
+    margin: 0 auto;
+}
+
+.filtered__news {
+    display: flex;
+    flex-wrap: wrap;
+}

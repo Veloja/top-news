@@ -1,20 +1,16 @@
 import './styles/main.scss';
 
-import { addLoadedClass, onTabClick } from './domJS/domJS';
+import { addLoadedClass, onTabClick, filter } from './domJS/domJS';
 import { newsItem } from './components/newsItem';
 
 import * as API from './API/news';
-
-const topNewsBtn = document.querySelector('.js-top-news');
-const categoriesBtn = document.querySelector('.js-categories');
-const searchBtn = document.querySelector('.js-search');
 
 const usBtn = document.querySelector('.js-us');
 const gbBtn = document.querySelector('.js-gb');
 
 const news = document.getElementById('news');
-const categories = document.getElementById('categories');
-const search = document.getElementById('search');
+const search = document.querySelector('.search');
+
 
 usBtn.addEventListener('click', getArticles);
 gbBtn.addEventListener('click', getArticles);
@@ -22,20 +18,70 @@ gbBtn.addEventListener('click', getArticles);
 let state = {
     loadingNews: true,
     news: [],
+    countryName: 'Great Britain',
 }
+let term = '';
+let newsArr = [];
 
 async function getArticles() {
+    let countryName = '';
     const value = this.getAttribute('data-cn')
-    console.log(value);
+    value === 'gb' ? countryName = 'Grait britain' : countryName = 'USA'
     const news = await API.getByCountries(value);
     setState({
         ...state,
         news,
-        loadingNews: false
+        loadingNews: false,
+        countryName
     })
+    newsArr = news;
     console.log(state);
     renderNews(state);
+    renderSearch(state);
     attachOpenPopupListener();
+    attachKeyupEventListener();
+    attachSearchBtn(state);
+    showFilteredNews()
+}
+
+function attachSearchBtn(newState) {
+    const state = newState;
+    const btn = document.querySelector('.search__btn');
+    btn.addEventListener('click', searchTerm);
+}
+
+function searchTerm() {
+    const termToFind = term.toLowerCase();
+    const filteredNews = newsArr.filter(newsItem => {
+        const title = newsItem.title
+        if(title.toLowerCase().includes(termToFind)) {
+            return newsItem
+        }
+    })
+    showFilteredNews(filteredNews)
+    clearInputValue()
+}
+
+function clearInputValue() {
+    const input = document.querySelector('.search__input')
+    input.value = ''
+}
+
+function showFilteredNews(filteredNews) {
+    let arr = [];
+    const wrap = document.querySelector('.filtered__news');
+    filteredNews === undefined ? arr = [] : arr = filteredNews
+
+    wrap.innerHTML = `
+        ${ arr.map((item, index) => newsItem(item, index)).join('') }
+    `
+}
+
+function attachKeyupEventListener() {
+    const search = document.querySelector('.search__input');
+    const filtered = search.addEventListener('keyup', () => {
+        term = event.target.value
+    });
 }
 
 function attachOpenPopupListener() {
@@ -47,7 +93,6 @@ function attachOpenPopupListener() {
 }
 
 function openPopup() {
-
     let title = '';
     let img = '';
     let desc = '';
@@ -98,6 +143,17 @@ function renderNews() {
                 ? `<h1>LOADING...</h1>`
                 : `${state.news.map((item, index) => newsItem(item, index)).join('')}`
         }
+    `
+}
+
+function renderSearch(state) {
+    search.innerHTML = `
+        <h2>Search Top News by ${state.countryName}</h2>
+        <input class="search__input" type="text" value="" placeholder="Search top news" />
+        <button class="search__btn">Search</button>
+        <div class="filtered__news">
+        
+        </div>
     `
 }
 
