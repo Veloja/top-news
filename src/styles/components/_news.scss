@@ -10,6 +10,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    font-family: $font-default;
     .loaded & {
         transition: box-shadow $dur $ease;
     }
@@ -29,12 +30,15 @@
     position: relative;
     width: 100%;
     overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .news__item-img {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
     height: auto;
 }

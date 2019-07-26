@@ -26,7 +26,7 @@ let newsArr = [];
 async function getArticles() {
     let countryName = '';
     const value = this.getAttribute('data-cn')
-    value === 'gb' ? countryName = 'Grait britain' : countryName = 'USA'
+    value === 'gb' ? countryName = 'Great Britain' : countryName = 'United States'
     const news = await API.getByCountries(value);
     setState({
         ...state,
@@ -43,6 +43,10 @@ async function getArticles() {
     attachSearchBtn(state);
     showFilteredNews()
 }
+
+
+
+
 
 function attachSearchBtn(newState) {
     const state = newState;
@@ -113,15 +117,15 @@ function openPopup() {
     popup.innerHTML = `
         <div class="popup__wrap">
             <h5 class="popup__title">${title}</h5>
-            <div class="popup__image">
-                <img class="popup__img" src="${img}" />
+            <div class="popup__image" style="background-image: url('${img}')">
+               
             </div>
             ${
                 !desc
                     ? ''
                     :  `<p class="popup__desc">${desc}</p>`
             }
-            <button class="popupClose">back</button>
+            <button class="btn popupClose">back</button>
         </div>
     `
     document.body.appendChild(popup);
@@ -149,8 +153,10 @@ function renderNews() {
 function renderSearch(state) {
     search.innerHTML = `
         <h2>Search Top News by ${state.countryName}</h2>
-        <input class="search__input" type="text" value="" placeholder="Search top news" />
-        <button class="search__btn">Search</button>
+        <div class="search-input__wrap">
+            <input class="search__input" type="text" value="" placeholder="Search top news" />
+            <button class="search__btn">Search</button>
+        </div>
         <div class="filtered__news">
         
         </div>

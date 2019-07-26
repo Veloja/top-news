@@ -13,11 +13,16 @@
 .popup__wrap {
     position: relative;
     width: 90%;
+    min-height: 90%;
     padding: 40px;
     transform: translate(-50%, -50%);
     top: 50%;
     left: 50%;
     background-color: $white;
+    font-family: $font-default;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .popup__image {
@@ -25,6 +30,7 @@
     max-height: 500px;
     overflow: hidden;
     width: 100%;
+    min-height: 350px;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
-
-
