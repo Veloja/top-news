@@ -18,33 +18,48 @@ gbBtn.addEventListener('click', getArticles);
 usBtn.addEventListener('click', changeBtnClass);
 gbBtn.addEventListener('click', changeBtnClass);
 
+usBtn.addEventListener('click', setCountToZero);
+gbBtn.addEventListener('click', setCountToZero);
+
+usBtn.addEventListener('click', displayCategories);
+gbBtn.addEventListener('click', displayCategories);
+
 let state = {
     news: [],
+    country: 'gb',
     countryName: 'Great Britain',
-    term: ''
+    term: '',
+    business: [],
+    count: 0
+}
+
+function setCountToZero() {
+    state.count = 0;
 }
 
 // api for top news and search
 async function getArticles() {
     let countryName = '';
-    //check which country btn is clicked 
-    const value = this.getAttribute('data-cn');
-    value === 'gb' ? countryName = 'Great Britain' : countryName = 'United States'
 
-    const news = await API.getByCountries(value);
+    //check which country btn is clicked and set state
+    state.country = this.getAttribute('data-cn');
+    state.country === 'gb' ? countryName = 'Great Britain' : countryName = 'United States'
+
+    const news = await API.getByCountries(state.country);
     setState({
         ...state,
         news,
         countryName
     })
-    console.log(state);
+    console.log('TOP NEWS', state);
     renderNews(state);
     renderSearch(state);
     attachOpenPopupListener();
     attachKeyupEventListener();
     attachSearchBtn(state);
-    showFilteredNews()
+    showFilteredNews();
 }
+
 
 // categories functionality
 const categoriesBtn = document.querySelector('.js-categories');
@@ -53,15 +68,17 @@ const business = document.querySelector('.categories__category--business');
 categoriesBtn.addEventListener('click', displayCategories);
 // categoriesBtn.click();
 
-let categoriesState = {
-    business: []
-}
 let next = null;
 let prev = null;
 async function displayCategories() {
-    const businessCategory = await API.getBusiness('gb', 'business');
-    categoriesState.business = businessCategory;
-    renderBusinessCategory(categoriesState);
+    const businessCategoryNews = await API.getBusiness(state.country, 'business');
+    setState({
+        ...state,
+        business: businessCategoryNews,
+        count: 0
+    })
+    renderBusinessCategory(state);
+    console.log(state, 'BUSINESS');
     next = document.querySelector('.js-next');
     prev = document.querySelector('.js-prev');
     next.addEventListener('click', moveSliderToRight);
@@ -75,7 +92,7 @@ function renderBusinessCategory() {
             <button class="js-next slider__btn-next"></button>
             <div class="category__slider">
                 <div class="slider">
-                    ${categoriesState.business.map((item, index) => newsItem(item, index)).join('')}
+                    ${state.business.map((item, index) => newsItem(item, index)).join('')}
                 </div>
             </div>
         </div>
@@ -83,30 +100,31 @@ function renderBusinessCategory() {
 }
 
 //slider
-let count = 0;
-
 function moveSliderToRight() {
     const sliderItems = document.querySelectorAll('.slider .news__item');
     const width = sliderItems[0].offsetWidth + 15
-    count++;
+    state.count = state.count + 1;
 
     sliderItems.forEach(item => {
-        item.style.transform = `translateX(-${width * count}px)`
+        item.style.transform = `translateX(-${width * state.count}px)`
     })
-    count > 0 && (prev.className = prev.className.replace('slider__btn--disabled', ''));
-    count >= 3 && (next.className += 'slider__btn--disabled')
+    state.count > 0 && (prev.className = prev.className.replace('slider__btn--disabled', ''));
+    state.count >= 3 && (next.className += 'slider__btn--disabled')
+    console.log('plus', state.count);
+
 }
 
 function moveSliderToLeft() {
     const sliderItems = document.querySelectorAll('.slider .news__item');
     const width = sliderItems[0].offsetWidth + 15
-    count--;
+    state.count = state.count -1;
     
     sliderItems.forEach(item => {
-        item.style.transform = `translateX(-${width * count}px)`
+        item.style.transform = `translateX(-${width * state.count}px)`
     })
-    count === 0 && (prev.className += 'slider__btn--disabled');
-    count < 3 && (next.className = next.className.replace('slider__btn--disabled', ''));
+    state.count === 0 && (prev.className += 'slider__btn--disabled');
+    state.count < 3 && (next.className = next.className.replace('slider__btn--disabled', ''));
+    console.log('minus', state.count);
 }
 
 // first part with top news
