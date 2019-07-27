@@ -19,28 +19,25 @@ usBtn.addEventListener('click', changeBtnClass);
 gbBtn.addEventListener('click', changeBtnClass);
 
 let state = {
-    loadingNews: true,
     news: [],
     countryName: 'Great Britain',
+    term: ''
 }
-//search state
-let term = '';
-let newsArr = [];
 
 // api for top news and search
 async function getArticles() {
     let countryName = '';
-    const value = this.getAttribute('data-cn')
+    //check which country btn is clicked 
+    const value = this.getAttribute('data-cn');
     value === 'gb' ? countryName = 'Great Britain' : countryName = 'United States'
+
     const news = await API.getByCountries(value);
     setState({
         ...state,
         news,
-        loadingNews: false,
         countryName
     })
-    newsArr = news;
-    // console.log(state);
+    console.log(state);
     renderNews(state);
     renderSearch(state);
     attachOpenPopupListener();
@@ -112,45 +109,17 @@ function moveSliderToLeft() {
     count < 3 && (next.className = next.className.replace('slider__btn--disabled', ''));
 }
 
-
-// first part with top news and search
+// first part with top news
 function attachSearchBtn(newState) {
     const state = newState;
     const btn = document.querySelector('.search__btn');
     btn.addEventListener('click', searchTerm);
 }
 
-function searchTerm() {
-    const termToFind = term.toLowerCase();
-    const filteredNews = newsArr.filter(newsItem => {
-        const title = newsItem.title
-        if(title.toLowerCase().includes(termToFind)) {
-            return newsItem
-        }
-    })
-    showFilteredNews(filteredNews)
-    clearInputValue()
-}
-
-function clearInputValue() {
-    const input = document.querySelector('.search__input')
-    input.value = ''
-}
-
-function showFilteredNews(filteredNews) {
-    let arr = [];
-    const wrap = document.querySelector('.filtered__news');
-    filteredNews === undefined ? arr = [] : arr = filteredNews
-
-    wrap.innerHTML = `
-        ${ arr.map((item, index) => newsItem(item, index)).join('') }
-    `
-}
-
 function attachKeyupEventListener() {
     const search = document.querySelector('.search__input');
     const filtered = search.addEventListener('keyup', () => {
-        term = event.target.value
+        state.term = event.target.value
     });
 }
 
@@ -205,14 +174,40 @@ function closePopup() {
 }
 
 gbBtn.click();
-
 function renderNews() {
     news.innerHTML = `
-        ${
-            state.loadingNews
-                ? `<h1>LOADING...</h1>`
-                : `${state.news.map((item, index) => newsItem(item, index)).join('')}`
+        ${state.news.map((item, index) => newsItem(item, index)).join('')}
+    `
+}
+
+
+
+
+// FILTER SEARCH 
+function searchTerm() {
+    const termToFind = state.term.toLowerCase();
+    const filteredNews = state.news.filter(newsItem => {
+        const title = newsItem.title;
+        if(title.toLowerCase().includes(termToFind)) {
+            return newsItem
         }
+    })
+    showFilteredNews(filteredNews);
+    clearInputValue();
+}
+
+function clearInputValue() {
+    const input = document.querySelector('.search__input');
+    input.value = '';
+}
+
+function showFilteredNews(filteredNews) {
+    let arr = [];
+    const wrap = document.querySelector('.filtered__news');
+    filteredNews === undefined ? arr = [] : arr = filteredNews
+
+    wrap.innerHTML = `
+        ${ arr.map((item, index) => newsItem(item, index)).join('') }
     `
 }
 
