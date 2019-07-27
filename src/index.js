@@ -51,7 +51,7 @@ const categoriesBtn = document.querySelector('.js-categories');
 const business = document.querySelector('.categories__category--business');
 
 categoriesBtn.addEventListener('click', displayCategories);
-categoriesBtn.click();
+// categoriesBtn.click();
 
 let categoriesState = {
     business: []
@@ -123,10 +123,10 @@ function attachKeyupEventListener() {
     });
 }
 
+// POPUP
 function attachOpenPopupListener() {
-    const divs = document.querySelectorAll('.news__item-link');
-
-    divs.forEach(link => {
+    const allNews = document.querySelectorAll('.news__item-link');
+    allNews.forEach(link => {
         link.parentElement.addEventListener('click', openPopup);
     })
 }
@@ -147,7 +147,7 @@ function openPopup() {
         }
     });
 
-    const popup = document.createElement('div')
+    const popup = document.createElement('div');
     popup.className += 'popup'
     popup.innerHTML = `
         <div class="popup__wrap">
@@ -167,11 +167,14 @@ function openPopup() {
     backBtn = document.querySelector('.popupClose');
     backBtn.addEventListener('click', closePopup)
 }
-
 let backBtn = ''
 function closePopup() {
     const tet = this.closest('.popup').remove();
 }
+
+
+
+
 
 gbBtn.click();
 function renderNews() {
@@ -179,9 +182,6 @@ function renderNews() {
         ${state.news.map((item, index) => newsItem(item, index)).join('')}
     `
 }
-
-
-
 
 // FILTER SEARCH 
 function searchTerm() {
