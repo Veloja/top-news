@@ -1,0 +1,67 @@
+@import 'components/variables';
+
+.category__slider {
+    overflow: hidden;
+    position: relative;
+}
+
+.categories__category--sport {
+    position: relative;
+}
+
+.slider {
+    display: flex;
+    width: 1575px;
+    .news__item {
+        width: 30%;
+        margin-right: 15px;
+        transition: transform $dur $ease;
+    }
+}
+
+.slider__btn-prev, .slider__btn-next {
+    position: absolute;
+    left: 30px;
+    border: 1px solid $black;
+    background-color: $black;
+    display: block;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    cursor: pointer;
+    transition: background-color $dur $ease, color $dur $ease;
+    &.slider__btn--disabled {
+        opacity: 0;
+        pointer-events: none;
+    }
+    &:focus {
+        outline: none;
+    }
+    &::after {
+        content: '<';
+        position: absolute;
+        display: block;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: $white;
+        font-size: 24px;
+    }
+    &:hover {
+        background-color: $white;
+        &::after {
+            color: $black;
+        }
+    }
+}
+
+.slider__btn-next {
+    left: initial;
+    right: 30px;
+    &::after {
+        content: '>';
+    }
+}

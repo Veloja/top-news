@@ -22,23 +22,4 @@ function removeCertainClass(elements, className) {
     });
 }
 
-// const filter = (event) => {
-//     const value = event.target.value.toLowerCase();
-//     const cards = document.querySelectorAll('.card');
-//     cards.forEach(function(card, index) {
-//         const text = card.querySelector('.card__title').innerHTML;
-//         text.toLowerCase().includes(value) 
-//             ? card.style.display = 'inline-block'
-//             : card.style.display = 'none'
-//     })
-// };
-
-const filter = (event) => {
-    const value = event.target.value.toLowerCase();
-    // dom elements 
-    const topNews = document.querySelectorAll('.news__item');
-    return console.log('FILTERED FROM RET', topNews);
-    
-}
-
-export { addLoadedClass, onTabClick, filter };
+export { addLoadedClass, onTabClick };

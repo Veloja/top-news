@@ -1,6 +1,6 @@
 import './styles/main.scss';
 
-import { addLoadedClass, onTabClick, filter } from './domJS/domJS';
+import { addLoadedClass, onTabClick } from './domJS/domJS';
 import { newsItem } from './components/newsItem';
 
 import * as API from './API/news';
@@ -20,9 +20,11 @@ let state = {
     news: [],
     countryName: 'Great Britain',
 }
+//search state
 let term = '';
 let newsArr = [];
 
+// api for top news and search
 async function getArticles() {
     let countryName = '';
     const value = this.getAttribute('data-cn')
@@ -35,7 +37,7 @@ async function getArticles() {
         countryName
     })
     newsArr = news;
-    console.log(state);
+    // console.log(state);
     renderNews(state);
     renderSearch(state);
     attachOpenPopupListener();
@@ -44,10 +46,71 @@ async function getArticles() {
     showFilteredNews()
 }
 
+// categories functionality
+const categoriesBtn = document.querySelector('.js-categories');
+const business = document.querySelector('.categories__category--business');
+
+categoriesBtn.addEventListener('click', displayCategories);
+categoriesBtn.click();
+
+let categoriesState = {
+    business: []
+}
+let next = null;
+let prev = null;
+async function displayCategories() {
+    const businessCategory = await API.getBusiness('gb', 'business');
+    categoriesState.business = businessCategory;
+    renderBusinessCategory(categoriesState);
+    next = document.querySelector('.js-next');
+    prev = document.querySelector('.js-prev');
+    next.addEventListener('click', moveSliderToRight);
+    prev.addEventListener('click', moveSliderToLeft);
+}
+
+function renderBusinessCategory() {
+    business.innerHTML = `
+        <div class="slider__parent">
+            <button class="js-prev slider__btn-prev slider__btn--disabled"></button>
+            <button class="js-next slider__btn-next"></button>
+            <div class="category__slider">
+                <div class="slider">
+                    ${categoriesState.business.map((item, index) => newsItem(item, index)).join('')}
+                </div>
+            </div>
+        </div>
+    `
+}
+
+//slider
+let count = 0;
+
+function moveSliderToRight() {
+    const sliderItems = document.querySelectorAll('.slider .news__item');
+    const width = sliderItems[0].offsetWidth + 15
+    count++;
+
+    sliderItems.forEach(item => {
+        item.style.transform = `translateX(-${width * count}px)`
+    })
+    count > 0 && (prev.className = prev.className.replace('slider__btn--disabled', ''));
+    count >= 3 && (next.className += 'slider__btn--disabled')
+}
+
+function moveSliderToLeft() {
+    const sliderItems = document.querySelectorAll('.slider .news__item');
+    const width = sliderItems[0].offsetWidth + 15
+    count--;
+    
+    sliderItems.forEach(item => {
+        item.style.transform = `translateX(-${width * count}px)`
+    })
+    count === 0 && (prev.className += 'slider__btn--disabled');
+    count < 3 && (next.className = next.className.replace('slider__btn--disabled', ''));
+}
 
 
-
-
+// first part with top news and search
 function attachSearchBtn(newState) {
     const state = newState;
     const btn = document.querySelector('.search__btn');
