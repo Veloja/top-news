@@ -1,6 +1,6 @@
 import './styles/main.scss';
 
-import { addLoadedClass, onTabClick } from './domJS/domJS';
+import { addLoadedClass, onTabClick, changeBtnClass } from './domJS/domJS';
 import { newsItem } from './components/newsItem';
 
 import * as API from './API/news';
@@ -14,6 +14,9 @@ const search = document.querySelector('.search');
 
 usBtn.addEventListener('click', getArticles);
 gbBtn.addEventListener('click', getArticles);
+
+usBtn.addEventListener('click', changeBtnClass);
+gbBtn.addEventListener('click', changeBtnClass);
 
 let state = {
     loadingNews: true,
