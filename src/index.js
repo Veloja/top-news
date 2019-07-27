@@ -8,8 +8,11 @@ import * as API from './API/news';
 const usBtn = document.querySelector('.js-us');
 const gbBtn = document.querySelector('.js-gb');
 
-const news = document.getElementById('news');
+const news = document.querySelector('.news__wrap');
 const search = document.querySelector('.search');
+
+const categoriesTitle = document.querySelector('.categories__title');
+const newsTitle = document.querySelector('.news__title');
 
 
 usBtn.addEventListener('click', getArticles);
@@ -24,6 +27,9 @@ gbBtn.addEventListener('click', setCountToZero);
 usBtn.addEventListener('click', displayCategories);
 gbBtn.addEventListener('click', displayCategories);
 
+usBtn.addEventListener('click', setCountryName);
+gbBtn.addEventListener('click', setCountryName);
+
 let state = {
     news: [],
     country: 'gb',
@@ -31,6 +37,12 @@ let state = {
     term: '',
     business: [],
     count: 0
+}
+
+function setCountryName(event) {
+    const countryName = event.target.getAttribute('data-cn');
+    countryName === 'gb' ? state.countryName = 'Great Britain' : state.countryName = 'United States'
+    state.countryName
 }
 
 function setCountToZero() {
@@ -53,6 +65,7 @@ async function getArticles() {
     })
     console.log('TOP NEWS', state);
     renderNews(state);
+    newsTitle.innerHTML = `All news from ${state.countryName}`
     renderSearch(state);
     attachOpenPopupListener();
     attachKeyupEventListener();
@@ -83,6 +96,9 @@ async function displayCategories() {
     prev = document.querySelector('.js-prev');
     next.addEventListener('click', moveSliderToRight);
     prev.addEventListener('click', moveSliderToLeft);
+    console.log('TITLE', categoriesTitle);
+    categoriesTitle.innerHTML = `Top 5 news by categories from ${state.countryName}`
+
 }
 
 function renderBusinessCategory() {
@@ -110,8 +126,6 @@ function moveSliderToRight() {
     })
     state.count > 0 && (prev.className = prev.className.replace('slider__btn--disabled', ''));
     state.count >= 3 && (next.className += 'slider__btn--disabled')
-    console.log('plus', state.count);
-
 }
 
 function moveSliderToLeft() {
@@ -124,7 +138,6 @@ function moveSliderToLeft() {
     })
     state.count === 0 && (prev.className += 'slider__btn--disabled');
     state.count < 3 && (next.className = next.className.replace('slider__btn--disabled', ''));
-    console.log('minus', state.count);
 }
 
 // first part with top news
@@ -150,7 +163,7 @@ function attachOpenPopupListener() {
 }
 
 function openPopup() {
-    let title = '';
+    let title = ''; 
     let img = '';
     let desc = '';
 

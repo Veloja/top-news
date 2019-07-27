@@ -18,12 +18,11 @@ body {
     border: 1px solid $black;
     height: auto;
     &.content--active {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        padding: 20px;
+        display: block;
     }
 }
+
+
 
 #search {
     height: 100%;

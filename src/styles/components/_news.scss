@@ -1,5 +1,12 @@
 @import 'components/variables';
 
+.news__wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 20px;
+}
+
 .news__item {
     width: 30%;
     min-height: 400px;
