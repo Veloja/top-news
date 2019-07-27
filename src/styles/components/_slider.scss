@@ -19,6 +19,33 @@
     }
 }
 
+.slider__title {
+    cursor: pointer;
+    transition: color $dur $ease;
+    position: relative;
+    margin-bottom: 15px;
+    display: inline-block;
+    &:hover {
+        color: $mildPink;
+    }
+    &::after {
+        position: absolute;
+        content: '';
+        display: block;
+        bottom: -2px;
+        width: 0;
+        left: 0;
+        height: 2px;
+        background-color: $mildPink;
+        transition: width $dur $ease;
+    }
+    &:hover {
+        &::after {
+            width: 100%;
+        }
+    }
+}
+
 .slider__btn-prev, .slider__btn-next {
     position: absolute;
     left: 30px;

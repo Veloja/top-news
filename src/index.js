@@ -85,9 +85,13 @@ let next = null;
 let prev = null;
 async function displayCategories() {
     const businessCategoryNews = await API.getBusiness(state.country, 'business');
+    console.log(businessCategoryNews.all, 'BUSINESS ALL');
+    console.log(businessCategoryNews.topFive, 'BUSINESS TOP 5');
+
     setState({
         ...state,
-        business: businessCategoryNews,
+        business: businessCategoryNews.topFive,
+        businessAll: businessCategoryNews.all,
         count: 0
     })
     renderBusinessCategory(state);
@@ -96,7 +100,6 @@ async function displayCategories() {
     prev = document.querySelector('.js-prev');
     next.addEventListener('click', moveSliderToRight);
     prev.addEventListener('click', moveSliderToLeft);
-    console.log('TITLE', categoriesTitle);
     categoriesTitle.innerHTML = `Top 5 news by categories from ${state.countryName}`
 
 }
@@ -104,6 +107,7 @@ async function displayCategories() {
 function renderBusinessCategory() {
     business.innerHTML = `
         <div class="slider__parent">
+        <h3 class="slider__title">Businness</h3>
             <button class="js-prev slider__btn-prev slider__btn--disabled"></button>
             <button class="js-next slider__btn-next"></button>
             <div class="category__slider">
