@@ -15,13 +15,11 @@ const getBusiness = (country, category) => {
     let all = []
     const data = fetch(`https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=28626ffdb69d49a8989eaceeb85ef254`)
         .then(result => result.json())
-        .then(data => displayTopFiveCategoryArticles(data))
-        console.log(data, 'DATAAA');
-        console.log(all, 'ALLL');
+        .then(data => displayTopFiveAndAllCategoryArticles(data))
         return data;
 }
 
-function displayTopFiveCategoryArticles(data) {
+function displayTopFiveAndAllCategoryArticles(data) {
     const topFive = data.articles.splice(0, 5);
     const all = data.articles
     return { topFive, all };

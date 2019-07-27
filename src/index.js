@@ -85,9 +85,6 @@ let next = null;
 let prev = null;
 async function displayCategories() {
     const businessCategoryNews = await API.getBusiness(state.country, 'business');
-    console.log(businessCategoryNews.all, 'BUSINESS ALL');
-    console.log(businessCategoryNews.topFive, 'BUSINESS TOP 5');
-
     setState({
         ...state,
         business: businessCategoryNews.topFive,
@@ -95,9 +92,11 @@ async function displayCategories() {
         count: 0
     })
     renderBusinessCategory(state);
+    attachCategoryPopupListener();
     console.log(state, 'BUSINESS');
     next = document.querySelector('.js-next');
     prev = document.querySelector('.js-prev');
+
     next.addEventListener('click', moveSliderToRight);
     prev.addEventListener('click', moveSliderToLeft);
     categoriesTitle.innerHTML = `Top 5 news by categories from ${state.countryName}`
@@ -115,6 +114,7 @@ function renderBusinessCategory() {
                     ${state.business.map((item, index) => newsItem(item, index)).join('')}
                 </div>
             </div>
+            <div id="business"></div>
         </div>
     `
 }
@@ -163,9 +163,56 @@ function attachOpenPopupListener() {
     const allNews = document.querySelectorAll('.news__item-link');
     allNews.forEach(link => {
         link.parentElement.addEventListener('click', openPopup);
+        // link.parentElement.addEventListener('click', openCategoryPopup);
     })
 }
 
+
+
+// CATEGORY POPUP
+function attachCategoryPopupListener() {
+    const slides = document.querySelectorAll('.category__slider .news__item');
+    console.log(slides, '5 CATEGORY SLIDES');
+    slides.forEach(slide => slide.addEventListener('click', openCategoryPopup))
+}
+
+function openCategoryPopup() {
+    let title = ''; 
+    let img = '';
+    let desc = '';
+
+    const clickedPopupID = this.getAttribute('data-item');
+
+    state.business.filter((item, index) => {
+        if(index === +clickedPopupID) {
+            title = item.title;
+            img = item.urlToImage;
+            desc = item.content;
+        }
+    });
+
+    const popup = document.createElement('div');
+    popup.className += 'popup'
+    popup.innerHTML = `
+        <div class="popup__wrap">
+            <h5 class="popup__title">${title}</h5>
+            <div class="popup__image" style="background-image: url('${img}')">
+               
+            </div>
+            ${
+                !desc
+                    ? ''
+                    :  `<p class="popup__desc">${desc}</p>`
+            }
+            <button class="btn popupClose">back</button>
+        </div>
+    `
+    document.body.appendChild(popup);
+    backBtn = document.querySelector('.popupClose');
+    backBtn.addEventListener('click', closePopup)
+}
+
+// NEWS POPUP
 function openPopup() {
     let title = ''; 
     let img = '';
