@@ -1,8 +1,8 @@
 import './styles/main.scss';
 
-import { addLoadedClass, onTabClick, changeBtnClass } from './domJS/domJS';
+import { addLoadedClass, onTabClick, changeBtnClass, showFilteredNews, clearInputValue } from './domJS/domJS';
 import { newsItem } from './components/newsItem';
-
+import { createAndAppendPopup } from './domJS/popups';
 import * as API from './API/news';
 
 const usBtn = document.querySelector('.js-us');
@@ -122,7 +122,9 @@ function showAllCategoryNews() {
         </div>
     `
     const categoryBtn = document.querySelector('.js-categories-btn');
-    categoryBtn.addEventListener('click', goBackToCategoriesMain)
+    categoryBtn.addEventListener('click', goBackToCategoriesMain);
+    attachCategoryAllNewsPopupListener()
+
 }
 
 function goBackToCategoriesMain() {
@@ -188,6 +190,26 @@ function attachKeyupEventListener() {
     });
 }
 
+// CATEGORY ALL NEWS POPUP
+function attachCategoryAllNewsPopupListener() {
+    const items = document.querySelectorAll('.categories__all .news__item');
+    items.forEach(item => item.addEventListener('click', openCategoryAllNewsPopup))
+}
+
+function openCategoryAllNewsPopup() {
+    let title = ''; 
+    let img = '';
+    let desc = '';
+    const clickedPopupID = this.getAttribute('data-item');
+    state.businessAll.filter((item, index) => {
+        if(index === +clickedPopupID) {
+            title = item.title;
+            img = item.urlToImage;
+            desc = item.content;
+        }
+    });
+    createAndAppendPopup(title, img, desc)
+}
 
 // CATEGORY POPUP
 function attachCategoryPopupListener() {
@@ -199,9 +221,7 @@ function openCategoryPopup() {
     let title = ''; 
     let img = '';
     let desc = '';
-
     const clickedPopupID = this.getAttribute('data-item');
-
     state.business.filter((item, index) => {
         if(index === +clickedPopupID) {
             title = item.title;
@@ -209,26 +229,7 @@ function openCategoryPopup() {
             desc = item.content;
         }
     });
-
-    const popup = document.createElement('div');
-    popup.className += 'popup'
-    popup.innerHTML = `
-        <div class="popup__wrap">
-            <h5 class="popup__title">${title}</h5>
-            <div class="popup__image" style="background-image: url('${img}')">
-               
-            </div>
-            ${
-                !desc
-                    ? ''
-                    :  `<p class="popup__desc">${desc}</p>`
-            }
-            <button class="btn popupClose">back</button>
-        </div>
-    `
-    document.body.appendChild(popup);
-    backBtn = document.querySelector('.popupClose');
-    backBtn.addEventListener('click', closePopup)
+    createAndAppendPopup(title, img, desc);
 }
 
 // NEWS POPUP
@@ -236,7 +237,6 @@ function attachOpenPopupListener() {
     const allNews = document.querySelectorAll('.news__item-link');
     allNews.forEach(link => {
         link.parentElement.addEventListener('click', openPopup);
-        // link.parentElement.addEventListener('click', openCategoryPopup);
     })
 }
 
@@ -244,10 +244,7 @@ function openPopup() {
     let title = ''; 
     let img = '';
     let desc = '';
-
     const clickedPopupID = this.getAttribute('data-item');
-    console.log(clickedPopupID, 'id');
-
     state.news.filter((item, index) => {
         if(index === +clickedPopupID) {
             title = item.title;
@@ -255,34 +252,12 @@ function openPopup() {
             desc = item.content;
         }
     });
-
-    const popup = document.createElement('div');
-    popup.className += 'popup'
-    popup.innerHTML = `
-        <div class="popup__wrap">
-            <h5 class="popup__title">${title}</h5>
-            <div class="popup__image" style="background-image: url('${img}')">
-               
-            </div>
-            ${
-                !desc
-                    ? ''
-                    :  `<p class="popup__desc">${desc}</p>`
-            }
-            <button class="btn popupClose">back</button>
-        </div>
-    `
-    document.body.appendChild(popup);
-    backBtn = document.querySelector('.popupClose');
-    backBtn.addEventListener('click', closePopup)
+    createAndAppendPopup(title, img, desc);
 }
 let backBtn = ''
 function closePopup() {
     const tet = this.closest('.popup').remove();
 }
-
-
-
 
 
 gbBtn.click();
@@ -305,20 +280,20 @@ function searchTerm() {
     clearInputValue();
 }
 
-function clearInputValue() {
-    const input = document.querySelector('.search__input');
-    input.value = '';
-}
+// function clearInputValue() {
+//     const input = document.querySelector('.search__input');
+//     input.value = '';
+// }
 
-function showFilteredNews(filteredNews) {
-    let arr = [];
-    const wrap = document.querySelector('.filtered__news');
-    filteredNews === undefined ? arr = [] : arr = filteredNews
+// function showFilteredNews(filteredNews) {
+//     let arr = [];
+//     const wrap = document.querySelector('.filtered__news');
+//     filteredNews === undefined ? arr = [] : arr = filteredNews
 
-    wrap.innerHTML = `
-        ${ arr.map((item, index) => newsItem(item, index)).join('') }
-    `
-}
+//     wrap.innerHTML = `
+//         ${ arr.map((item, index) => newsItem(item, index)).join('') }
+//     `
+// }
 
 function renderSearch(state) {
     search.innerHTML = `

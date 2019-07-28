@@ -1,3 +1,6 @@
+import { state } from '../index';
+import { newsItem } from '../components/newsItem';
+
 const body = document.getElementsByTagName('body')[0];
 const addLoadedClass = window.addEventListener('load', () => {
     body.classList.add('loaded');
@@ -32,4 +35,20 @@ function removeCertainClass(elements, className) {
     });
 }
 
-export { addLoadedClass, onTabClick, changeBtnClass };
+// FILTER
+function clearInputValue() {
+    const input = document.querySelector('.search__input');
+    input.value = '';
+}
+
+function showFilteredNews(filteredNews) {
+    let arr = [];
+    const wrap = document.querySelector('.filtered__news');
+    filteredNews === undefined ? arr = [] : arr = filteredNews
+
+    wrap.innerHTML = `
+        ${ arr.map((item, index) => newsItem(item, index)).join('') }
+    `
+}
+
+export { addLoadedClass, onTabClick, changeBtnClass, showFilteredNews, clearInputValue };
