@@ -83,6 +83,7 @@ categoriesBtn.addEventListener('click', displayCategories);
 
 let next = null;
 let prev = null;
+
 async function displayCategories() {
     const businessCategoryNews = await API.getBusiness(state.country, 'business');
     setState({
@@ -92,15 +93,44 @@ async function displayCategories() {
         count: 0
     })
     renderBusinessCategory(state);
+    console.log('RENDER BUSINESS', state);
     attachCategoryPopupListener();
-    console.log(state, 'BUSINESS');
     next = document.querySelector('.js-next');
     prev = document.querySelector('.js-prev');
+
+    const businessAllnews = document.querySelector('#business');
+    const categoryTitle = document.querySelector('.slider__title');
+    categoryTitle.addEventListener('click', showAllCategoryNews)
 
     next.addEventListener('click', moveSliderToRight);
     prev.addEventListener('click', moveSliderToLeft);
     categoriesTitle.innerHTML = `Top 5 news by categories from ${state.countryName}`
+}
 
+function showAllCategoryNews() {
+    const categoriesAll = document.querySelector('.categories__all');
+    const clickedTitle = event.target.value;
+    categoriesAll.className += ' open'
+    const categoriesDiv = document.querySelector('#categories');
+    categoriesDiv.className += ' hide'
+
+    categoriesAll.innerHTML = `
+        <h2 class="category-all-news__title">All news from ${state.countryName} for business category</h2>
+        <button class="js-categories-btn btn">go back</button>
+        <div class="category-all-news__holder">
+            ${state.businessAll.map((item, index) => newsItem(item, index)).join('')}
+        </div>
+    `
+    const categoryBtn = document.querySelector('.js-categories-btn');
+    categoryBtn.addEventListener('click', goBackToCategoriesMain)
+}
+
+function goBackToCategoriesMain() {
+    const categoriesAll = document.querySelector('.categories__all');
+    categoriesAll.className = categoriesAll.className.replace('open', '');
+    categoriesAll.innerHTML = '';
+    const categoriesDiv = document.querySelector('#categories');
+    categoriesDiv.className = categoriesDiv.className.replace('hide', '');
 }
 
 function renderBusinessCategory() {
@@ -158,21 +188,10 @@ function attachKeyupEventListener() {
     });
 }
 
-// POPUP
-function attachOpenPopupListener() {
-    const allNews = document.querySelectorAll('.news__item-link');
-    allNews.forEach(link => {
-        link.parentElement.addEventListener('click', openPopup);
-        // link.parentElement.addEventListener('click', openCategoryPopup);
-    })
-}
-
-
 
 // CATEGORY POPUP
 function attachCategoryPopupListener() {
     const slides = document.querySelectorAll('.category__slider .news__item');
-    console.log(slides, '5 CATEGORY SLIDES');
     slides.forEach(slide => slide.addEventListener('click', openCategoryPopup))
 }
 
@@ -213,6 +232,14 @@ function openCategoryPopup() {
 }
 
 // NEWS POPUP
+function attachOpenPopupListener() {
+    const allNews = document.querySelectorAll('.news__item-link');
+    allNews.forEach(link => {
+        link.parentElement.addEventListener('click', openPopup);
+        // link.parentElement.addEventListener('click', openCategoryPopup);
+    })
+}
+
 function openPopup() {
     let title = ''; 
     let img = '';
@@ -298,11 +325,9 @@ function renderSearch(state) {
         <h2>Search Top News by ${state.countryName}</h2>
         <div class="search-input__wrap">
             <input class="search__input" type="text" value="" placeholder="Search top news" />
-            <button class="search__btn">Search</button>
+            <button class="search__btn btn">Search</button>
         </div>
-        <div class="filtered__news">
-        
-        </div>
+        <div class="filtered__news"></div>
     `
 }
 

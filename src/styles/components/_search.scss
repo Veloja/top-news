@@ -41,6 +41,7 @@
     border: 1px solid $black;
     transition: transform $dur $ease;
     cursor: pointer;
+    margin-right: auto;
     &:hover {
         background-color: $mildGreen;
     }

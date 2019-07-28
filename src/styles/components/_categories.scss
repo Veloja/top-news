@@ -1,9 +1,54 @@
 @import 'components/variables';
 
+#categories.hide {
+    display: none;
+}
+
+.categories__category {
+    position: relative;
+}
+
 .category__holder {
     width: 100%;
     height: 100%;
     h2 {
         margin-bottom: 15px;
     }
+}
+
+.categories__all {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: $white;
+    &.open {
+        display: block;
+    }
+}
+
+#business {
+    height: 100%;
+    width: 100%;
+    border: 1px solid $black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    background-color: $white;
+    z-index: 4;
+    &.open {
+        display: block;
+    }
+}
+
+.categories__title {
+    font-family: $font-default;
+}
+
+.category-all-news__title {
+    font-family: $font-default;
+}
+
+.category-all-news__holder {
+    display: flex;
+    flex-wrap: wrap;
 }
