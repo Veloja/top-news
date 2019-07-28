@@ -52,9 +52,12 @@ function showFilteredNews(filteredNews) {
 }
 
 // SLIDER
+let prev = null;
+let next = null;
+
 function moveSliderToRight() {
-    const next = document.querySelector('.js-next');
-    const prev = document.querySelector('.js-prev');
+    next = document.querySelector('.js-next');
+    prev = document.querySelector('.js-prev');
     next.addEventListener('click', moveSliderToRight);
     prev.addEventListener('click', moveSliderToLeft);
     const sliderItems = document.querySelectorAll('.slider .news__item');
