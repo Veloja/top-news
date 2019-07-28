@@ -3,7 +3,7 @@ import './styles/main.scss';
 import { addLoadedClass, onTabClick, changeBtnClass, showFilteredNews, clearInputValue, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain } from './domJS/domJS';
 import { newsItem } from './components/newsItem';
 import { createAndAppendPopup } from './domJS/popups';
-import * as API from './API/news';
+import * as newsService from './services/newsService';
 
 const usBtn = document.querySelector('.js-us');
 const gbBtn = document.querySelector('.js-gb');
@@ -57,7 +57,7 @@ async function getArticles() {
     state.country = this.getAttribute('data-cn');
     state.country === 'gb' ? countryName = 'Great Britain' : countryName = 'United States'
 
-    const news = await API.getByCountries(state.country);
+    const news = await newsService.getByCountry(state.country);
     setState({
         ...state,
         news,
@@ -83,10 +83,10 @@ categoriesBtn.addEventListener('click', displayCategories);
 
 
 async function displayCategories() {
-    const businessCategoryNews = await API.getBusiness(state.country, 'business');
+    const businessCategoryNews = await newsService.getByCountryAndCategory(state.country, 'business');
     setState({
         ...state,
-        business: businessCategoryNews.topFive,
+        business: businessCategoryNews.slice(0,5),
         businessAll: businessCategoryNews.all,
         count: 0
     })
