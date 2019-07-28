@@ -1,4 +1,4 @@
-const newsItem = (item, index) => {
+export const newsItem = (item, index) => {
     return `
         <div class="news__item" data-item="${index}" type="button">
             <h3 class="news__item-title">${item.title}</h3>
@@ -9,5 +9,3 @@ const newsItem = (item, index) => {
         </div>
     `
 }
-
-export { newsItem };
