@@ -10,7 +10,8 @@ export const getByCountry = async (country) => {
 export const getByCountryAndCategory = async (country, category) => {
     const response = await fetch(`${endpoint}country=${country}&category=${category}&apiKey=${apiKey}`);
     const data = await response.json();
-    return data.articles;
+    return data.articles.map(a => ({...a, category}));
+    // return data.articles.map(a => ({...a, category}));
 }
 
 export const getByCountryAndQuery = async (country, query) => {
