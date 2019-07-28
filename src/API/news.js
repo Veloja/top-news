@@ -20,8 +20,8 @@ const getBusiness = (country, category) => {
 }
 
 function displayTopFiveAndAllCategoryArticles(data) {
+    const all = [...data.articles]
     const topFive = data.articles.splice(0, 5);
-    const all = data.articles
     return { topFive, all };
 } 
 

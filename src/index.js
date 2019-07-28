@@ -123,7 +123,6 @@ function showAllCategoryNews() {
     const categoryBtn = document.querySelector('.js-categories-btn');
     categoryBtn.addEventListener('click', goBackToCategoriesMain);
     attachCategoryAllNewsPopupListener()
-
 }
 
 function renderBusinessCategory() {
