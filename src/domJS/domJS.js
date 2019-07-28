@@ -1,5 +1,5 @@
 import { state } from '../index';
-import { newsItem } from '../components/newsItem';
+import { newsItem } from '../templates/newsItem';
 
 const body = document.getElementsByTagName('body')[0];
 const addLoadedClass = window.addEventListener('load', () => {

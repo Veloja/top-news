@@ -1,9 +1,30 @@
 import './styles/main.scss';
 
 import { addLoadedClass, onTabClick, changeBtnClass, showFilteredNews, clearInputValue, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain } from './domJS/domJS';
-import { newsItem } from './components/newsItem';
-import { createAndAppendPopup } from './domJS/popups';
+import { newsItem } from './templates/newsItem';
+import { displayPopup } from './popup';
 import * as newsService from './services/newsService';
+
+const countries = [
+    {
+        key: 'gb',
+        name: 'Great Britain'
+    },
+    {
+        key: 'us',
+        name: 'United States'
+    }
+]
+
+const categories = ['business', 'sport']
+
+let state = {
+    news: [],
+    country: countries[0],
+    term: '',
+    business: [],
+    count: 0
+}
 
 const usBtn = document.querySelector('.js-us');
 const gbBtn = document.querySelector('.js-gb');
@@ -15,8 +36,8 @@ const categoriesTitle = document.querySelector('.categories__title');
 const newsTitle = document.querySelector('.news__title');
 
 
-usBtn.addEventListener('click', getArticles);
-gbBtn.addEventListener('click', getArticles);
+usBtn.addEventListener('click', onChangeCountry);
+gbBtn.addEventListener('click', onChangeCountry);
 
 usBtn.addEventListener('click', changeBtnClass);
 gbBtn.addEventListener('click', changeBtnClass);
@@ -27,22 +48,11 @@ gbBtn.addEventListener('click', setCountToZero);
 usBtn.addEventListener('click', displayCategories);
 gbBtn.addEventListener('click', displayCategories);
 
-usBtn.addEventListener('click', setCountryName);
-gbBtn.addEventListener('click', setCountryName);
+gbBtn.click();
 
-let state = {
-    news: [],
-    country: 'gb',
-    countryName: 'Great Britain',
-    term: '',
-    business: [],
-    count: 0
-}
-
-function setCountryName(event) {
-    const countryName = event.target.getAttribute('data-cn');
-    countryName === 'gb' ? state.countryName = 'Great Britain' : state.countryName = 'United States'
-    state.countryName
+function setCountry(event) {
+    const countryKey = event.target.getAttribute('data-cn');
+    state.country = countries.find(c => c.key === countryKey);
 }
 
 function setCountToZero() {
@@ -50,27 +60,25 @@ function setCountToZero() {
 }
 
 // api for top news and search
-async function getArticles() {
-    let countryName = '';
+async function onChangeCountry(event) {  
+    // change state on action  
+    setCountry(event);
 
-    //check which country btn is clicked and set state
-    state.country = this.getAttribute('data-cn');
-    state.country === 'gb' ? countryName = 'Great Britain' : countryName = 'United States'
-
-    const news = await newsService.getByCountry(state.country);
-    setState({
-        ...state,
-        news,
-        countryName
-    })
+    // fetch new data
+    const news = await newsService.getByCountry(state.country.key);
+    state.news = news;
     console.log('TOP NEWS', state);
-    renderNews(state);
-    newsTitle.innerHTML = `All news from ${state.countryName}`
-    renderSearch(state);
-    attachOpenPopupListener();
-    attachKeyupEventListener();
-    attachSearchBtn(state);
-    showFilteredNews();
+
+    // update top news template
+    // update categories template
+    // update search template
+    // attach listeners to new dom elements
+    updateNewsInDom();
+    // update styles that are dependant on state
+    // updateCountryButtonsInDOM()
+
+
+
 }
 
 
@@ -83,7 +91,7 @@ categoriesBtn.addEventListener('click', displayCategories);
 
 
 async function displayCategories() {
-    const businessCategoryNews = await newsService.getByCountryAndCategory(state.country, 'business');
+    const businessCategoryNews = await newsService.getByCountryAndCategory(state.country.key, 'business');
     setState({
         ...state,
         business: businessCategoryNews.slice(0,5),
@@ -103,7 +111,7 @@ async function displayCategories() {
     const categoryTitle = document.querySelector('.slider__title');
     categoryTitle.addEventListener('click', showAllCategoryNews)
 
-    categoriesTitle.innerHTML = `Top 5 news by categories from ${state.countryName}`
+    categoriesTitle.innerHTML = `Top 5 news by categories from ${state.country.name}`
 }
 
 function showAllCategoryNews() {
@@ -114,7 +122,7 @@ function showAllCategoryNews() {
     categoriesDiv.className += ' hide'
 
     categoriesAll.innerHTML = `
-        <h2 class="category-all-news__title">All news from ${state.countryName} for business category</h2>
+        <h2 class="category-all-news__title">All news from ${state.country.name} for business category</h2>
         <button class="js-categories-btn btn">go back</button>
         <div class="category-all-news__holder">
             ${state.businessAll.map((item, index) => newsItem(item, index)).join('')}
@@ -173,7 +181,7 @@ function openCategoryAllNewsPopup() {
             desc = item.content;
         }
     });
-    createAndAppendPopup(title, img, desc)
+    displayPopup(title, img, desc)
 }
 // CATEGORY POPUP
 function attachCategoryPopupListener() {
@@ -192,7 +200,7 @@ function openCategoryPopup() {
             desc = item.content;
         }
     });
-    createAndAppendPopup(title, img, desc);
+    displayPopup(title, img, desc);
 }
 // NEWS POPUP
 function attachOpenPopupListener() {
@@ -213,15 +221,29 @@ function openPopup() {
             desc = item.content;
         }
     });
-    createAndAppendPopup(title, img, desc);
+    displayPopup(title, img, desc);
 }
 
 
-gbBtn.click();
-function renderNews() {
+// gbBtn.click();
+function updateNewsInDom() {
+    newsTitle.innerHTML = `All news from ${state.country.name}`;
+    // updateCountryButtonStyles(state.country);
+
+    // for(let item of news) {
+    //     const createdDomElem = createElement(newsItem(item, index));
+    //     createdDomElem.attachPopupListener(click, onPopp);
+    //     newsContainer.addChildren(createdDomElem);
+    // }
+
     news.innerHTML = `
         ${state.news.map((item, index) => newsItem(item, index)).join('')}
     `
+    renderSearch(state);
+    attachOpenPopupListener();
+    attachKeyupEventListener();
+    attachSearchBtn(state);
+    showFilteredNews();
 }
 
 // FILTER SEARCH 
@@ -239,7 +261,7 @@ function searchTerm() {
 
 function renderSearch(state) {
     search.innerHTML = `
-        <h2>Search Top News by ${state.countryName}</h2>
+        <h2>Search Top News by ${state.country.name}</h2>
         <div class="search-input__wrap">
             <input class="search__input" type="text" value="" placeholder="Search top news" />
             <button class="search__btn btn">Search</button>
