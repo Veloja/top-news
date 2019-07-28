@@ -1,4 +1,4 @@
-function createAndAppendPopup(title, img, desc) {
+function displayPopup(title, img, desc) {
     const popup = document.createElement('div');
     popup.className += 'popup'
     popup.innerHTML = `
@@ -7,11 +7,7 @@ function createAndAppendPopup(title, img, desc) {
             <div class="popup__image" style="background-image: url('${img}')">
                
             </div>
-            ${
-                !desc
-                    ? ''
-                    :  `<p class="popup__desc">${desc}</p>`
-            }
+            ${descriptionParagraph(desc)}
             <button class="btn popupClose">back</button>
         </div>
     `
@@ -20,10 +16,14 @@ function createAndAppendPopup(title, img, desc) {
     backBtn.addEventListener('click', closePopup)
 }
 
+const descriptionParagraph = (text) => {
+    return text ? `<p class="popup__desc">${text}</p>` : '';
+}
+
 let backBtn = ''
 function closePopup() {
     this.closest('.popup').remove();
 }
 
 
-export { createAndAppendPopup }
+export { displayPopup }
