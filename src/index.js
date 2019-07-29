@@ -16,7 +16,7 @@ const countries = [
     }
 ]
 
-const categories = ['business', 'sport']
+const categories = ['business', 'sport'];
 
 let state = {
     news: [],
@@ -35,6 +35,8 @@ const search = document.querySelector('.search');
 const categoriesTitle = document.querySelector('.categories__title');
 const newsTitle = document.querySelector('.news__title');
 
+const categoriesWrapper = document.querySelector('.categories');
+
 
 usBtn.addEventListener('click', onChangeCountry);
 gbBtn.addEventListener('click', onChangeCountry);
@@ -45,8 +47,8 @@ gbBtn.addEventListener('click', changeBtnClass);
 usBtn.addEventListener('click', setCountToZero);
 gbBtn.addEventListener('click', setCountToZero);
 
-usBtn.addEventListener('click', displayCategories);
-gbBtn.addEventListener('click', displayCategories);
+usBtn.addEventListener('click', updateCategoriesInDOM);
+gbBtn.addEventListener('click', updateCategoriesInDOM);
 
 gbBtn.click();
 
@@ -67,7 +69,6 @@ async function onChangeCountry(event) {
     // fetch new data
     const news = await newsService.getByCountry(state.country.key);
     state.news = news;
-    console.log('TOP NEWS', state);
 
     // update top news template
     // update categories template
@@ -75,11 +76,94 @@ async function onChangeCountry(event) {
     updateSearchInDOM();
 
     updateNewsInDom();
+
     // attach listeners to new dom elements
     // update styles that are dependant on state
     // updateCountryButtonsInDOM()
+}
 
+async function fetchAllCategories() {
+    const resultsForAllCategories = await Promise.all(categories.map( async (c, index, arr) => {
+        return await newsService.getByCountryAndCategory(state.country.key, arr[index]);
+    }));
 
+    renderByCategory(resultsForAllCategories);
+}
+
+function renderByCategory(resultsForAllCategories) {
+
+    // for(let item of news) {
+    //     const createdDomElem = createElement(newsItem(item, index));
+    //     createdDomElem.attachPopupListener(click, onPopp);
+    //     newsContainer.addChildren(createdDomElem);
+    // }
+
+    let title = '';
+    categoriesWrapper.innerHTML = `
+    <h2>Top 5 news by categories from ${state.country.name}</h2>
+    ${
+        resultsForAllCategories.map((r, index, arr) => `
+            <div class="slider__parent">
+                <h3 class="slider__title">${title = arr[index][0].category.charAt(0).toUpperCase() + arr[index][0].category.slice(1)}</h3>
+                    <button class="js-prev slider__btn-prev slider__btn--disabled"></button>
+                    <button class="js-next slider__btn-next"></button>
+                    <div class="category__slider">
+                        <div class="slider">
+                            ${arr[index].slice(0, 5).map((item, index) => newsItem(item, index)).join('')}
+                        </div>
+                    </div>
+                    <div id="${arr[index][0].category}"></div>
+            </div>
+        `).join('')
+    }
+    `
+    attachCategoryPopupListener();
+    const next = document.querySelector('.js-next');
+    const prev = document.querySelector('.js-prev');
+    console.log(next, 'next')
+    next.addEventListener('click', moveSliderToRight);
+    prev.addEventListener('click', moveSliderToLeft);
+}
+
+// categories functionality
+const categoriesBtn = document.querySelector('.js-categories');
+const business = document.querySelector('.categories__category--business');
+
+categoriesBtn.addEventListener('click', updateCategoriesInDOM);
+// categoriesBtn.click();
+
+function updateCategoriesInDOM() {
+    fetchAllCategories();
+
+    // const next = document.querySelector('.js-next');
+    // const prev = document.querySelector('.js-prev');
+    // next.addEventListener('click', moveSliderToRight);
+    // prev.addEventListener('click', moveSliderToLeft);
+
+    // const businessAllnews = document.querySelector('#business');
+    // const categoryTitle = document.querySelector('.slider__title');
+    // categoryTitle.addEventListener('click', showAllCategoryNews)
+
+    // categoriesTitle.innerHTML = `Top 5 news by categories from ${state.country.name}`
+}
+
+function showAllCategoryNews() {
+    const categoriesAll = document.querySelector('.categories__all');
+    const clickedTitle = event.target.value;
+    categoriesAll.className += ' open'
+    const categoriesDiv = document.querySelector('#categories');
+    categoriesDiv.className += ' hide'
+
+    categoriesAll.innerHTML = `
+        <h2 class="category-all-news__title">All news from ${state.country.name} for business category</h2>
+        <button class="js-categories-btn btn">go back</button>
+        <div class="category-all-news__holder">
+            ${state.businessAll.map((item, index) => newsItem(item, index)).join('')}
+        </div>
+    `
+    const categoryBtn = document.querySelector('.js-categories-btn');
+    categoryBtn.addEventListener('click', goBackToCategoriesMain);
+    attachCategoryAllNewsPopupListener()
 
 }
 
@@ -104,11 +188,11 @@ function updateSearchInDOM() {
     renderSearch(state);
     attachKeyupEventListener();
 }
+
 function attachKeyupEventListener() {
     const search = document.querySelector('.search__input');
     search.addEventListener('keyup', getSpecificNewsByQuery);
 }
-
 
 async function getSpecificNewsByQuery(event) {
     state.term = event.target.value;
@@ -120,80 +204,10 @@ async function getSpecificNewsByQuery(event) {
     `
 }
 
-
-
-
-// categories functionality
-const categoriesBtn = document.querySelector('.js-categories');
-const business = document.querySelector('.categories__category--business');
-
-categoriesBtn.addEventListener('click', displayCategories);
-// categoriesBtn.click();
-
-async function displayCategories() {
-    const businessCategoryNews = await newsService.getByCountryAndCategory(state.country.key, 'business');
-    setState({
-        ...state,
-        business: businessCategoryNews.slice(0,5),
-        businessAll: businessCategoryNews.all,
-        count: 0
-    })
-    renderBusinessCategory(state);
-    console.log('RENDER BUSINESS', state);
-    attachCategoryPopupListener();
-
-    const next = document.querySelector('.js-next');
-    const prev = document.querySelector('.js-prev');
-    next.addEventListener('click', moveSliderToRight);
-    prev.addEventListener('click', moveSliderToLeft);
-
-    const businessAllnews = document.querySelector('#business');
-    const categoryTitle = document.querySelector('.slider__title');
-    categoryTitle.addEventListener('click', showAllCategoryNews)
-
-    categoriesTitle.innerHTML = `Top 5 news by categories from ${state.country.name}`
-}
-
-function showAllCategoryNews() {
-    const categoriesAll = document.querySelector('.categories__all');
-    const clickedTitle = event.target.value;
-    categoriesAll.className += ' open'
-    const categoriesDiv = document.querySelector('#categories');
-    categoriesDiv.className += ' hide'
-
-    categoriesAll.innerHTML = `
-        <h2 class="category-all-news__title">All news from ${state.country.name} for business category</h2>
-        <button class="js-categories-btn btn">go back</button>
-        <div class="category-all-news__holder">
-            ${state.businessAll.map((item, index) => newsItem(item, index)).join('')}
-        </div>
-    `
-    const categoryBtn = document.querySelector('.js-categories-btn');
-    categoryBtn.addEventListener('click', goBackToCategoriesMain);
-    attachCategoryAllNewsPopupListener()
-
-}
-
-function renderBusinessCategory() {
-    business.innerHTML = `
-        <div class="slider__parent">
-        <h3 class="slider__title">Businness</h3>
-            <button class="js-prev slider__btn-prev slider__btn--disabled"></button>
-            <button class="js-next slider__btn-next"></button>
-            <div class="category__slider">
-                <div class="slider">
-                    ${state.business.map((item, index) => newsItem(item, index)).join('')}
-                </div>
-            </div>
-            <div id="business"></div>
-        </div>
-    `
-}
-
 // CATEGORY ALL NEWS POPUP
 function attachCategoryAllNewsPopupListener() {
     const items = document.querySelectorAll('.categories__all .news__item');
-    items.forEach(item => item.addEventListener('click', openCategoryAllNewsPopup))
+    items.forEach(item => item.addEventListener('click', openCategoryAllNewsPopup));
 }
 function openCategoryAllNewsPopup() {
     let title = '';
