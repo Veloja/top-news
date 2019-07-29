@@ -1,7 +1,7 @@
 import './styles/main.scss';
 
-import { addLoadedClass, onTabClick, changeBtnClass, showFilteredNews, clearInputValue, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain } from './domJS/domJS';
-import { newsItem } from './templates/newsItem';
+import { addLoadedClass, onTabClick, changeBtnClass, clearInputValue, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain } from './domJS/domJS';
+import { newsItem, renderSearch } from './templates/htmlComponents';
 import { displayPopup } from './popup';
 import * as newsService from './services/newsService';
 
@@ -60,8 +60,8 @@ function setCountToZero() {
 }
 
 // api for top news and search
-async function onChangeCountry(event) {  
-    // change state on action  
+async function onChangeCountry(event) {
+    // change state on action
     setCountry(event);
 
     // fetch new data
@@ -72,14 +72,55 @@ async function onChangeCountry(event) {
     // update top news template
     // update categories template
     // update search template
-    // attach listeners to new dom elements
+    updateSearchInDOM();
+
     updateNewsInDom();
+    // attach listeners to new dom elements
     // update styles that are dependant on state
     // updateCountryButtonsInDOM()
 
 
 
 }
+
+// gbBtn.click();
+function updateNewsInDom() {
+    newsTitle.innerHTML = `All news from ${state.country.name}`;
+    // updateCountryButtonStyles(state.country);
+
+    // for(let item of news) {
+    //     const createdDomElem = createElement(newsItem(item, index));
+    //     createdDomElem.attachPopupListener(click, onPopp);
+    //     newsContainer.addChildren(createdDomElem);
+    // }
+
+    news.innerHTML = `
+        ${state.news.map((item, index) => newsItem(item, index)).join('')}
+    `
+    attachOpenPopupListener();
+}
+
+function updateSearchInDOM() {
+    renderSearch(state);
+    attachKeyupEventListener();
+}
+function attachKeyupEventListener() {
+    const search = document.querySelector('.search__input');
+    search.addEventListener('keyup', getSpecificNewsByQuery);
+}
+
+
+async function getSpecificNewsByQuery(event) {
+    state.term = event.target.value;
+    const fetchedNewsByQueryArr = await newsService.getByCountryAndQuery(state.country.key, state.term);
+
+    const specificNewsWrap = document.querySelector('.filtered__news');
+    specificNewsWrap.innerHTML = `
+        ${fetchedNewsByQueryArr.map((item, index) => newsItem(item, index)).join('')}
+    `
+}
+
+
 
 
 // categories functionality
@@ -88,7 +129,6 @@ const business = document.querySelector('.categories__category--business');
 
 categoriesBtn.addEventListener('click', displayCategories);
 // categoriesBtn.click();
-
 
 async function displayCategories() {
     const businessCategoryNews = await newsService.getByCountryAndCategory(state.country.key, 'business');
@@ -150,27 +190,13 @@ function renderBusinessCategory() {
     `
 }
 
-// first part with top news
-function attachSearchBtn(newState) {
-    const state = newState;
-    const btn = document.querySelector('.search__btn');
-    btn.addEventListener('click', searchTerm);
-}
-
-function attachKeyupEventListener() {
-    const search = document.querySelector('.search__input');
-    const filtered = search.addEventListener('keyup', () => {
-        state.term = event.target.value
-    });
-}
-
 // CATEGORY ALL NEWS POPUP
 function attachCategoryAllNewsPopupListener() {
     const items = document.querySelectorAll('.categories__all .news__item');
     items.forEach(item => item.addEventListener('click', openCategoryAllNewsPopup))
 }
 function openCategoryAllNewsPopup() {
-    let title = ''; 
+    let title = '';
     let img = '';
     let desc = '';
     const clickedPopupID = this.getAttribute('data-item');
@@ -189,7 +215,7 @@ function attachCategoryPopupListener() {
     slides.forEach(slide => slide.addEventListener('click', openCategoryPopup))
 }
 function openCategoryPopup() {
-    let title = ''; 
+    let title = '';
     let img = '';
     let desc = '';
     const clickedPopupID = this.getAttribute('data-item');
@@ -210,7 +236,7 @@ function attachOpenPopupListener() {
     })
 }
 function openPopup() {
-    let title = ''; 
+    let title = '';
     let img = '';
     let desc = '';
     const clickedPopupID = this.getAttribute('data-item');
@@ -225,50 +251,7 @@ function openPopup() {
 }
 
 
-// gbBtn.click();
-function updateNewsInDom() {
-    newsTitle.innerHTML = `All news from ${state.country.name}`;
-    // updateCountryButtonStyles(state.country);
 
-    // for(let item of news) {
-    //     const createdDomElem = createElement(newsItem(item, index));
-    //     createdDomElem.attachPopupListener(click, onPopp);
-    //     newsContainer.addChildren(createdDomElem);
-    // }
-
-    news.innerHTML = `
-        ${state.news.map((item, index) => newsItem(item, index)).join('')}
-    `
-    renderSearch(state);
-    attachOpenPopupListener();
-    attachKeyupEventListener();
-    attachSearchBtn(state);
-    showFilteredNews();
-}
-
-// FILTER SEARCH 
-function searchTerm() {
-    const termToFind = state.term.toLowerCase();
-    const filteredNews = state.news.filter(newsItem => {
-        const title = newsItem.title;
-        if(title.toLowerCase().includes(termToFind)) {
-            return newsItem
-        }
-    })
-    showFilteredNews(filteredNews);
-    clearInputValue();
-}
-
-function renderSearch(state) {
-    search.innerHTML = `
-        <h2>Search Top News by ${state.country.name}</h2>
-        <div class="search-input__wrap">
-            <input class="search__input" type="text" value="" placeholder="Search top news" />
-            <button class="search__btn btn">Search</button>
-        </div>
-        <div class="filtered__news"></div>
-    `
-}
 
 const setState = (newState) => {
     state = { ...state, ...newState }
