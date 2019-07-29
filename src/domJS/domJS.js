@@ -1,5 +1,5 @@
 import { state } from '../index';
-import { newsItem } from '../templates/newsItem';
+import { newsItem } from '../templates/htmlComponents';
 
 const body = document.getElementsByTagName('body')[0];
 const addLoadedClass = window.addEventListener('load', () => {
@@ -35,22 +35,6 @@ function removeCertainClass(elements, className) {
     });
 }
 
-// FILTER
-function clearInputValue() {
-    const input = document.querySelector('.search__input');
-    input.value = '';
-}
-
-function showFilteredNews(filteredNews) {
-    let arr = [];
-    const wrap = document.querySelector('.filtered__news');
-    filteredNews === undefined ? arr = [] : arr = filteredNews
-
-    wrap.innerHTML = `
-        ${ arr.map((item, index) => newsItem(item, index)).join('') }
-    `
-}
-
 // SLIDER
 let prev = null;
 let next = null;
@@ -75,7 +59,7 @@ function moveSliderToLeft() {
     const sliderItems = document.querySelectorAll('.slider .news__item');
     const width = sliderItems[0].offsetWidth + 15
     state.count = state.count -1;
-    
+
     sliderItems.forEach(item => {
         item.style.transform = `translateX(-${width * state.count}px)`
     })
@@ -92,4 +76,4 @@ function goBackToCategoriesMain() {
     categoriesDiv.className = categoriesDiv.className.replace('hide', '');
 }
 
-export { addLoadedClass, onTabClick, changeBtnClass, showFilteredNews, clearInputValue, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain };
+export { addLoadedClass, onTabClick, changeBtnClass, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain };
