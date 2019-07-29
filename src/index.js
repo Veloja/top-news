@@ -77,27 +77,59 @@ async function onChangeCountry(event) {
 
     updateNewsInDom();
 
+    updateCategoriesInDOM();
+
     // attach listeners to new dom elements
     // update styles that are dependant on state
     // updateCountryButtonsInDOM()
 }
 
+// categories functionality
+const categoriesBtn = document.querySelector('.js-categories');
+categoriesBtn.addEventListener('click', updateCategoriesInDOM);
+
+function updateCategoriesInDOM() {
+    fetchAllCategories();
+}
 async function fetchAllCategories() {
     const resultsForAllCategories = await Promise.all(categories.map( async (c, index, arr) => {
         return await newsService.getByCountryAndCategory(state.country.key, arr[index]);
     }));
 
     renderByCategory(resultsForAllCategories);
+
+    const next = document.querySelectorAll('.js-next');
+    const prev = document.querySelectorAll('.js-prev');
+    next.forEach(n => n.addEventListener('click', moveSliderToRight));
+    prev.forEach(n => n.addEventListener('click', moveSliderToLeft));
+    let sliderTitle = document.querySelectorAll('.categories .slider__title');
+
+    sliderTitle.forEach(t => t.addEventListener('click', openAllCategoryNews))
+}
+
+async function openAllCategoryNews(event) {
+    const clickedCategorytitle = event.target.innerHTML.toLowerCase()
+    const allNewsForCategory = await newsService.getByCountryAndCategory(state.country.key, clickedCategorytitle);
+    console.log(allNewsForCategory);
+    const categoriesAll = document.querySelector('.categories__all');
+    const clickedTitle = event.target.value;
+    categoriesAll.className += ' open'
+    const categoriesDiv = document.querySelector('#categories');
+    categoriesDiv.className += ' hide'
+
+    categoriesAll.innerHTML = `
+        <h2 class="category-all-news__title">All news from for business category</h2>
+        <button class="js-categories-btn btn">go back</button>
+        <div class="category-all-news__holder">
+            ${allNewsForCategory.map((item, index) => newsItem(item, index)).join('')}
+        </div>
+    `
+    const categoryBtn = document.querySelector('.js-categories-btn');
+    categoryBtn.addEventListener('click', goBackToCategoriesMain);
+    attachCategoryAllNewsPopupListener()
 }
 
 function renderByCategory(resultsForAllCategories) {
-
-    // for(let item of news) {
-    //     const createdDomElem = createElement(newsItem(item, index));
-    //     createdDomElem.attachPopupListener(click, onPopp);
-    //     newsContainer.addChildren(createdDomElem);
-    // }
-
     let title = '';
     categoriesWrapper.innerHTML = `
     <h2>Top 5 news by categories from ${state.country.name}</h2>
@@ -117,34 +149,6 @@ function renderByCategory(resultsForAllCategories) {
         `).join('')
     }
     `
-    attachCategoryPopupListener();
-    const next = document.querySelector('.js-next');
-    const prev = document.querySelector('.js-prev');
-    console.log(next, 'next')
-    next.addEventListener('click', moveSliderToRight);
-    prev.addEventListener('click', moveSliderToLeft);
-}
-
-// categories functionality
-const categoriesBtn = document.querySelector('.js-categories');
-const business = document.querySelector('.categories__category--business');
-
-categoriesBtn.addEventListener('click', updateCategoriesInDOM);
-// categoriesBtn.click();
-
-function updateCategoriesInDOM() {
-    fetchAllCategories();
-
-    // const next = document.querySelector('.js-next');
-    // const prev = document.querySelector('.js-prev');
-    // next.addEventListener('click', moveSliderToRight);
-    // prev.addEventListener('click', moveSliderToLeft);
-
-    // const businessAllnews = document.querySelector('#business');
-    // const categoryTitle = document.querySelector('.slider__title');
-    // categoryTitle.addEventListener('click', showAllCategoryNews)
-
-    // categoriesTitle.innerHTML = `Top 5 news by categories from ${state.country.name}`
 }
 
 function showAllCategoryNews() {
@@ -167,16 +171,9 @@ function showAllCategoryNews() {
 
 }
 
-// gbBtn.click();
 function updateNewsInDom() {
     newsTitle.innerHTML = `All news from ${state.country.name}`;
     // updateCountryButtonStyles(state.country);
-
-    // for(let item of news) {
-    //     const createdDomElem = createElement(newsItem(item, index));
-    //     createdDomElem.attachPopupListener(click, onPopp);
-    //     newsContainer.addChildren(createdDomElem);
-    // }
 
     news.innerHTML = `
         ${state.news.map((item, index) => newsItem(item, index)).join('')}
@@ -262,13 +259,6 @@ function openPopup() {
         }
     });
     displayPopup(title, img, desc);
-}
-
-
-
-
-const setState = (newState) => {
-    state = { ...state, ...newState }
 }
 
 export { state }

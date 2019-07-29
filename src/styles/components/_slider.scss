@@ -47,6 +47,10 @@
     }
 }
 
+.slider__parent {
+    position: relative;
+}
+
 .slider__btn-prev, .slider__btn-next {
     position: absolute;
     left: 30px;

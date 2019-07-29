@@ -45,14 +45,14 @@ function moveSliderToRight() {
     next.addEventListener('click', moveSliderToRight);
     prev.addEventListener('click', moveSliderToLeft);
     const sliderItems = document.querySelectorAll('.slider .news__item');
-    const width = sliderItems[0].offsetWidth + 15
+    const width = sliderItems[0].offsetWidth + 15;
     state.count = state.count + 1;
 
     sliderItems.forEach(item => {
         item.style.transform = `translateX(-${width * state.count}px)`
     })
     state.count > 0 && (prev.className = prev.className.replace('slider__btn--disabled', ''));
-    state.count >= 3 && (next.className += 'slider__btn--disabled')
+    state.count >= 3 && (next.className += 'slider__btn--disabled');
 }
 
 function moveSliderToLeft() {
