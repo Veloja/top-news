@@ -30,9 +30,6 @@ const usBtn = document.querySelector('.js-us');
 const gbBtn = document.querySelector('.js-gb');
 
 const news = document.querySelector('.news__wrap');
-const search = document.querySelector('.search');
-
-const categoriesTitle = document.querySelector('.categories__title');
 const newsTitle = document.querySelector('.news__title');
 
 const categoriesWrapper = document.querySelector('.categories');
@@ -70,9 +67,13 @@ async function onChangeCountry(event) {
     const news = await newsService.getByCountry(state.country.key);
     state.news = news;
 
+
     // update top news template
     // update categories template
     // update search template
+
+    // switch za active page
+
     updateSearchInDOM();
 
     updateNewsInDom();
@@ -80,8 +81,10 @@ async function onChangeCountry(event) {
     updateCategoriesInDOM();
 
     // attach listeners to new dom elements
+    attachNewsPopupListener();
     // update styles that are dependant on state
     // updateCountryButtonsInDOM()
+
 }
 
 // categories functionality
@@ -98,6 +101,8 @@ async function fetchAllCategories() {
 
     renderByCategory(resultsForAllCategories);
 
+    attachCategoriesPopupListener();
+
     const next = document.querySelectorAll('.js-next');
     const prev = document.querySelectorAll('.js-prev');
     next.forEach(n => n.addEventListener('click', moveSliderToRight));
@@ -110,7 +115,7 @@ async function fetchAllCategories() {
 async function openAllCategoryNews(event) {
     const clickedCategorytitle = event.target.innerHTML.toLowerCase()
     const allNewsForCategory = await newsService.getByCountryAndCategory(state.country.key, clickedCategorytitle);
-    console.log(allNewsForCategory);
+    console.log(allNewsForCategory, 'ALL CATEGORY NEWS');
     const categoriesAll = document.querySelector('.categories__all');
     const clickedTitle = event.target.value;
     categoriesAll.className += ' open'
@@ -126,17 +131,17 @@ async function openAllCategoryNews(event) {
     `
     const categoryBtn = document.querySelector('.js-categories-btn');
     categoryBtn.addEventListener('click', goBackToCategoriesMain);
+    // attachCategoryAllNewsPopupListener()
     attachCategoryAllNewsPopupListener()
 }
 
 function renderByCategory(resultsForAllCategories) {
-    let title = '';
     categoriesWrapper.innerHTML = `
     <h2>Top 5 news by categories from ${state.country.name}</h2>
     ${
         resultsForAllCategories.map((r, index, arr) => `
             <div class="slider__parent">
-                <h3 class="slider__title">${title = arr[index][0].category.charAt(0).toUpperCase() + arr[index][0].category.slice(1)}</h3>
+                <h3 class="slider__title">${arr[index][0].category.charAt(0).toUpperCase() + arr[index][0].category.slice(1)}</h3>
                     <button class="js-prev slider__btn-prev slider__btn--disabled"></button>
                     <button class="js-next slider__btn-next"></button>
                     <div class="category__slider">
@@ -151,25 +156,6 @@ function renderByCategory(resultsForAllCategories) {
     `
 }
 
-function showAllCategoryNews() {
-    const categoriesAll = document.querySelector('.categories__all');
-    const clickedTitle = event.target.value;
-    categoriesAll.className += ' open'
-    const categoriesDiv = document.querySelector('#categories');
-    categoriesDiv.className += ' hide'
-
-    categoriesAll.innerHTML = `
-        <h2 class="category-all-news__title">All news from ${state.country.name} for business category</h2>
-        <button class="js-categories-btn btn">go back</button>
-        <div class="category-all-news__holder">
-            ${state.businessAll.map((item, index) => newsItem(item, index)).join('')}
-        </div>
-    `
-    const categoryBtn = document.querySelector('.js-categories-btn');
-    categoryBtn.addEventListener('click', goBackToCategoriesMain);
-    attachCategoryAllNewsPopupListener()
-
-}
 
 function updateNewsInDom() {
     newsTitle.innerHTML = `All news from ${state.country.name}`;
@@ -178,12 +164,13 @@ function updateNewsInDom() {
     news.innerHTML = `
         ${state.news.map((item, index) => newsItem(item, index)).join('')}
     `
-    attachOpenPopupListener();
 }
 
 function updateSearchInDOM() {
     renderSearch(state);
     attachKeyupEventListener();
+    // attachSearchPopupListener();
+
 }
 
 function attachKeyupEventListener() {
@@ -199,65 +186,48 @@ async function getSpecificNewsByQuery(event) {
     specificNewsWrap.innerHTML = `
         ${fetchedNewsByQueryArr.map((item, index) => newsItem(item, index)).join('')}
     `
+    attachSearchPopupListener();
 }
 
-// CATEGORY ALL NEWS POPUP
+
+
+
+// POPUPS functionallity
+function attachNewsPopupListener() {
+    const items = document.querySelectorAll('.news__item-link');
+    items.forEach(i => i.addEventListener('click', clickedItem))
+}
+
+function attachCategoriesPopupListener() {
+    const items = document.querySelectorAll('.slider__parent .news__item-link');
+    items.forEach(i => i.addEventListener('click', clickedItem))
+}
+
 function attachCategoryAllNewsPopupListener() {
-    const items = document.querySelectorAll('.categories__all .news__item');
-    items.forEach(item => item.addEventListener('click', openCategoryAllNewsPopup));
+    const items = document.querySelectorAll('.categories__all .news__item-link');
+    items.forEach(i => i.addEventListener('click', clickedItem))
 }
-function openCategoryAllNewsPopup() {
-    let title = '';
-    let img = '';
-    let desc = '';
-    const clickedPopupID = this.getAttribute('data-item');
-    state.businessAll.filter((item, index) => {
-        if(index === +clickedPopupID) {
-            title = item.title;
-            img = item.urlToImage;
-            desc = item.content;
-        }
-    });
-    displayPopup(title, img, desc)
+
+function attachSearchPopupListener() {
+    console.log('fromSEARCH');
+    const items = document.querySelectorAll('.filtered__news .news__item-link');
+    items.forEach(i => i.addEventListener('click', clickedItem))
 }
-// CATEGORY POPUP
-function attachCategoryPopupListener() {
-    const slides = document.querySelectorAll('.category__slider .news__item');
-    slides.forEach(slide => slide.addEventListener('click', openCategoryPopup))
+
+function clickedItem(event) {
+    console.log('search clicked')
+    const clickedLink = event.target;
+    const exactItem = clickedLink.closest('.news__item');
+    openPopups(exactItem);
 }
-function openCategoryPopup() {
-    let title = '';
-    let img = '';
-    let desc = '';
-    const clickedPopupID = this.getAttribute('data-item');
-    state.business.filter((item, index) => {
-        if(index === +clickedPopupID) {
-            title = item.title;
-            img = item.urlToImage;
-            desc = item.content;
-        }
-    });
-    displayPopup(title, img, desc);
-}
-// NEWS POPUP
-function attachOpenPopupListener() {
-    const allNews = document.querySelectorAll('.news__item-link');
-    allNews.forEach(link => {
-        link.parentElement.addEventListener('click', openPopup);
-    })
-}
-function openPopup() {
-    let title = '';
-    let img = '';
-    let desc = '';
-    const clickedPopupID = this.getAttribute('data-item');
-    state.news.filter((item, index) => {
-        if(index === +clickedPopupID) {
-            title = item.title;
-            img = item.urlToImage;
-            desc = item.content;
-        }
-    });
+
+function openPopups(exactItem) {
+    console.log('exactItem', exactItem)
+    const title = exactItem.querySelector('.news__item-title').innerHTML;
+    const styleAttr = exactItem.querySelector('.news__item-image').getAttribute('style');
+    const imgUrl = styleAttr.split('\'');
+    const img = imgUrl[1];
+    const desc = exactItem.querySelector('.news__item-desc');
     displayPopup(title, img, desc);
 }
 
