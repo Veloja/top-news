@@ -14,7 +14,7 @@ export const renderSearch = (state) =>  {
     search.innerHTML = `
         <h2>Search Top News by ${state.country.name}</h2>
         <div class="search-input__wrap">
-            <input class="search__input" type="text" value="" placeholder="Search top news" />
+            <input class="search__input" type="text" value="${state.term}" placeholder="Search top news" />
         </div>
         <div class="filtered__news"></div>
     `
