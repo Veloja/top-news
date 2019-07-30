@@ -26,7 +26,11 @@ let state = {
     count: 0,
     activeTab: {
         active: true,
-        tab: 'news'
+        tab: 'news',
+    },
+    activeCategory: {
+        active: false,
+        category: ''
     }
 }
 
@@ -61,10 +65,10 @@ function setCountToZero() {
 
 // api for top news and search
 async function onChangeCountry(event) {
-    // change state on action
+    // change country state on action
     setCountry(event);
 
-    // fetch new data
+    // fetch news data
     const news = await newsService.getByCountry(state.country.key);
     state.news = news;
 
@@ -72,13 +76,27 @@ async function onChangeCountry(event) {
     // switch za active page
     switch(state.activeTab.tab) {
         case 'news':
-                updateNewsInDom();
-                console.log('NEWS SWITCH');
-                break;
+            updateNewsInDom();
+            console.log('NEWS SWITCH');
+            break;
         case 'categories':
             updateCategoriesInDOM();
             console.log('CATEGORIES SWITCH');
             break;
+    }
+
+    // switch when one category with all news is open to change country
+    switch(state.activeCategory.active) {
+        // case true:
+        //     console.log('RADIM BREEE')
+        case 'business':
+                openAllCategoryNews(event);
+                console.log('BUSINESS NEWS IN CATEGORIES ALL SWITCH');
+                break;
+        case 'sport':
+                openAllCategoryNews(event);
+                console.log('SPORT NEWS IN CATEGORIES ALL SWITCH');
+                break;
     }
 
     updateSearchInDOM();
@@ -116,17 +134,17 @@ async function fetchAllCategories() {
 }
 
 async function openAllCategoryNews(event) {
-    const clickedCategorytitle = event.target.innerHTML.toLowerCase()
+    const clickedCategorytitle = event.target.innerHTML.toLowerCase();
+
     const allNewsForCategory = await newsService.getByCountryAndCategory(state.country.key, clickedCategorytitle);
-    console.log(allNewsForCategory, 'ALL CATEGORY NEWS');
+
     const categoriesAll = document.querySelector('.categories__all');
-    const clickedTitle = event.target.value;
     categoriesAll.className += ' open'
     const categoriesDiv = document.querySelector('#categories');
     categoriesDiv.className += ' hide'
 
     categoriesAll.innerHTML = `
-        <h2 class="category-all-news__title">All news from for business category</h2>
+        <h2 class="category-all-news__title">All news from for ${state.country.name} category...</h2>
         <button class="js-categories-btn btn">go back</button>
         <div class="category-all-news__holder">
             ${allNewsForCategory.map((item, index) => newsItem(item, index)).join('')}
@@ -135,26 +153,28 @@ async function openAllCategoryNews(event) {
     const categoryBtn = document.querySelector('.js-categories-btn');
     categoryBtn.addEventListener('click', goBackToCategoriesMain);
     attachCategoryAllNewsPopupListener();
+    state.activeCategory.category = clickedCategorytitle;
+    state.activeCategory.active = true;
 }
 
 function renderByCategory(resultsForAllCategories) {
     categoriesWrapper.innerHTML = `
-    <h2>Top 5 news by categories from ${state.country.name}</h2>
-    ${
-        resultsForAllCategories.map((r, index, arr) => `
-            <div class="slider__parent">
-                <h3 class="slider__title">${arr[index][0].category.charAt(0).toUpperCase() + arr[index][0].category.slice(1)}</h3>
-                    <button class="js-prev slider__btn-prev slider__btn--disabled"></button>
-                    <button class="js-next slider__btn-next"></button>
-                    <div class="category__slider">
-                        <div class="slider">
-                            ${arr[index].slice(0, 5).map((item, index) => newsItem(item, index)).join('')}
+        <h2>Top 5 news by categories from ${state.country.name}</h2>
+        ${
+            resultsForAllCategories.map((r, index, arr) => `
+                <div class="slider__parent">
+                    <h3 class="slider__title">${arr[index][0].category.charAt(0).toUpperCase() + arr[index][0].category.slice(1)}</h3>
+                        <button class="js-prev slider__btn-prev slider__btn--disabled"></button>
+                        <button class="js-next slider__btn-next"></button>
+                        <div class="category__slider">
+                            <div class="slider">
+                                ${arr[index].slice(0, 5).map((item, index) => newsItem(item, index)).join('')}
+                            </div>
                         </div>
-                    </div>
-                    <div id="${arr[index][0].category}"></div>
-            </div>
-        `).join('')
-    }
+                        <div id="${arr[index][0].category}"></div>
+                </div>
+            `).join('')
+        }
     `
 }
 
