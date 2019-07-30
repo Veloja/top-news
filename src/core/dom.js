@@ -54,12 +54,6 @@ function updateCategoriesInDOM(countryName, categoryNews) {
 }
 
 function renderByCategory(countryName, categoryNews) {
-
-
-
-
-
-    const categoriesWrapper = document.querySelector('.categories');
     const categoriesWrapper = document.querySelector('.categories');
     categoriesWrapper.innerHTML = `
         <h2>Top 5 news by categories from ${countryName}</h2>
