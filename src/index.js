@@ -48,9 +48,6 @@ gbBtn.addEventListener('click', changeBtnClass);
 usBtn.addEventListener('click', setCountToZero);
 gbBtn.addEventListener('click', setCountToZero);
 
-usBtn.addEventListener('click', updateCategoriesInDOM);
-gbBtn.addEventListener('click', updateCategoriesInDOM);
-
 gbBtn.click();
 
 function setCountry(event) {
@@ -73,23 +70,18 @@ async function onChangeCountry(event) {
 
     // update all templates depending on active tab, no need to render all at once
     // switch za active page
-    // switch(state.activeTab.tab) {
-    //     case 'search':
-    //         updateSearchInDOM();
-    //         break;
-    //     case 'news':
-    //             updateNewsInDom();
-    //             break;
-    //     case 'categories':
-    //         updateCategoriesInDOM();
-    //         break;
-    // }
+    switch(state.activeTab.tab) {
+        case 'news':
+                updateNewsInDom();
+                console.log('NEWS SWITCH');
+                break;
+        case 'categories':
+            updateCategoriesInDOM();
+            console.log('CATEGORIES SWITCH');
+            break;
+    }
 
     updateSearchInDOM();
-
-    updateNewsInDom();
-
-    updateCategoriesInDOM();
 
     // attach listeners to new dom elements
     attachNewsPopupListener();
@@ -120,7 +112,7 @@ async function fetchAllCategories() {
     prev.forEach(n => n.addEventListener('click', moveSliderToLeft));
     let sliderTitle = document.querySelectorAll('.categories .slider__title');
 
-    sliderTitle.forEach(t => t.addEventListener('click', openAllCategoryNews))
+    sliderTitle.forEach(t => t.addEventListener('click', openAllCategoryNews));
 }
 
 async function openAllCategoryNews(event) {
@@ -166,7 +158,7 @@ function renderByCategory(resultsForAllCategories) {
     `
 }
 
-
+// NEWS IN DOM
 function updateNewsInDom() {
     newsTitle.innerHTML = `All news from ${state.country.name}`;
     // updateCountryButtonStyles(state.country);
@@ -175,17 +167,15 @@ function updateNewsInDom() {
         ${state.news.map((item, index) => newsItem(item, index)).join('')}
     `
 }
-
+// SEARCH IN DOM
 function updateSearchInDOM() {
     renderSearch(state);
     attachKeyupEventListener();
 }
-
 function attachKeyupEventListener() {
     const search = document.querySelector('.search__input');
     search.addEventListener('keyup', getSpecificNewsByQuery);
 }
-
 async function getSpecificNewsByQuery(event) {
     state.term = event.target.value;
     const fetchedNewsByQueryArr = await newsService.getByCountryAndQuery(state.country.key, state.term);
@@ -197,10 +187,7 @@ async function getSpecificNewsByQuery(event) {
     attachSearchPopupListener();
 }
 
-
-
-
-// POPUPS functionallity
+// POPUP listeners
 function attachNewsPopupListener() {
     const items = document.querySelectorAll('.news__item-link');
     items.forEach(i => i.addEventListener('click', clickedItem))

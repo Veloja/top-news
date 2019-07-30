@@ -31,7 +31,7 @@ function closePopup() {
     this.closest('.popup').remove();
 }
 
-
+// popup functionality
 function clickedItem(event) {
     const clickedLink = event.target;
     const exactItem = clickedLink.closest('.news__item');
