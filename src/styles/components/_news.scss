@@ -11,6 +11,7 @@
     width: 30%;
     min-height: 400px;
     padding: 15px;
+    margin-right: 15px;
     border-radius: 2px;
     border: 1px solid black;
     margin-bottom: 20px;
@@ -79,7 +80,7 @@
         left: 0;
         width: 0;
         height: 2px;
-        background-color: $mildGreen;
+        background-color: $black;
         transition: width $dur $ease;
     }
     &:hover {
