@@ -205,13 +205,16 @@ function attachKeyupEventListener() {
 }
 async function getSpecificNewsByQuery(event) {
     state.term = event.target.value;
-    const fetchedNewsByQueryArr = await newsService.getByCountryAndQuery(state.country.key, state.term);
 
-    const specificNewsWrap = document.querySelector('.filtered__news');
-    specificNewsWrap.innerHTML = `
-        ${fetchedNewsByQueryArr.map((item, index) => newsItem(item, index)).join('')}
-    `
-    attachSearchPopupListener();
+    let timer = 0;
+    clearTimeout(timer);
+    timer = setTimeout(async() => {
+        const fetchedNewsByQueryArr = await newsService.getByCountryAndQuery(state.country.key, state.term);
+        const specificNewsWrap = document.querySelector('.filtered__news');
+        specificNewsWrap.innerHTML = `${fetchedNewsByQueryArr.map((item, index) => newsItem(item, index)).join('')}
+        `
+        attachSearchPopupListener();
+    }, 500);
 }
 
 // POPUP listeners
