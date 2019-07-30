@@ -1,8 +1,8 @@
 import './styles/main.scss';
 
-import { addLoadedClass, onTabClick, changeBtnClass, clearInputValue, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain } from './domJS/domJS';
+import { addLoadedClass, onTabClick, changeBtnClass, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain } from './domJS/domJS';
 import { newsItem, renderSearch } from './templates/htmlComponents';
-import { displayPopup } from './popup';
+import { clickedItem } from './popup';
 import * as newsService from './services/newsService';
 
 const countries = [
@@ -23,7 +23,11 @@ let state = {
     country: countries[0],
     term: '',
     business: [],
-    count: 0
+    count: 0,
+    activeTab: {
+        active: true,
+        tab: 'news'
+    }
 }
 
 const usBtn = document.querySelector('.js-us');
@@ -67,12 +71,19 @@ async function onChangeCountry(event) {
     const news = await newsService.getByCountry(state.country.key);
     state.news = news;
 
-
-    // update top news template
-    // update categories template
-    // update search template
-
+    // update all templates depending on active tab, no need to render all at once
     // switch za active page
+    // switch(state.activeTab.tab) {
+    //     case 'search':
+    //         updateSearchInDOM();
+    //         break;
+    //     case 'news':
+    //             updateNewsInDom();
+    //             break;
+    //     case 'categories':
+    //         updateCategoriesInDOM();
+    //         break;
+    // }
 
     updateSearchInDOM();
 
@@ -131,8 +142,7 @@ async function openAllCategoryNews(event) {
     `
     const categoryBtn = document.querySelector('.js-categories-btn');
     categoryBtn.addEventListener('click', goBackToCategoriesMain);
-    // attachCategoryAllNewsPopupListener()
-    attachCategoryAllNewsPopupListener()
+    attachCategoryAllNewsPopupListener();
 }
 
 function renderByCategory(resultsForAllCategories) {
@@ -169,8 +179,6 @@ function updateNewsInDom() {
 function updateSearchInDOM() {
     renderSearch(state);
     attachKeyupEventListener();
-    // attachSearchPopupListener();
-
 }
 
 function attachKeyupEventListener() {
@@ -210,23 +218,7 @@ function attachCategoryAllNewsPopupListener() {
 
 function attachSearchPopupListener() {
     const items = document.querySelectorAll('.filtered__news .news__item-link');
-    items.forEach(i => i.addEventListener('click', clickedItem))
-}
-
-function clickedItem(event) {
-    console.log('search clicked')
-    const clickedLink = event.target;
-    const exactItem = clickedLink.closest('.news__item');
-    openPopups(exactItem);
-}
-
-function openPopups(exactItem) {
-    const title = exactItem.querySelector('.news__item-title').innerHTML;
-    const styleAttr = exactItem.querySelector('.news__item-image').getAttribute('style');
-    const imgUrl = styleAttr.split('\'');
-    const img = imgUrl[1];
-    const desc = exactItem.querySelector('.news__item-desc').innerHTML;
-    displayPopup(title, img, desc);
+    items.forEach(i => i.addEventListener('click', clickedItem));
 }
 
 export { state }

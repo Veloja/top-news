@@ -1,5 +1,4 @@
 function displayPopup(title, img, desc) {
-    console.log('DESC', desc);
     const popup = document.createElement('div');
     popup.className += 'popup'
     popup.innerHTML = `
@@ -33,4 +32,20 @@ function closePopup() {
 }
 
 
-export { displayPopup }
+function clickedItem(event) {
+    const clickedLink = event.target;
+    const exactItem = clickedLink.closest('.news__item');
+    openPopups(exactItem);
+}
+
+function openPopups(exactItem) {
+    const title = exactItem.querySelector('.news__item-title').innerHTML;
+    const styleAttr = exactItem.querySelector('.news__item-image').getAttribute('style');
+    const imgUrl = styleAttr.split('\'');
+    const img = imgUrl[1];
+    const desc = exactItem.querySelector('.news__item-desc').innerHTML;
+    displayPopup(title, img, desc);
+}
+
+
+export { clickedItem }

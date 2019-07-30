@@ -18,6 +18,11 @@ function onTabClick(event) {
     const contents = document.querySelectorAll('.content');
     removeCertainClass(contents, 'content--active');
     document.getElementById(id).className += ' content--active';
+
+    // set state of active tab
+    state.activeTab.tab = id
+    console.log(state.activeTab);
+
 }
 
 const countries = document.querySelector('.header__countries');
