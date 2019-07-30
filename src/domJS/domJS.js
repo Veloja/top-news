@@ -21,7 +21,6 @@ function onTabClick(event) {
 
     // set state of active tab
     state.activeTab.tab = id
-    console.log(state.activeTab);
 
 }
 
@@ -44,32 +43,44 @@ function removeCertainClass(elements, className) {
 let prev = null;
 let next = null;
 
-function moveSliderToRight() {
-    next = document.querySelector('.js-next');
-    prev = document.querySelector('.js-prev');
-    next.addEventListener('click', moveSliderToRight);
-    prev.addEventListener('click', moveSliderToLeft);
-    const sliderItems = document.querySelectorAll('.slider .news__item');
-    const width = sliderItems[0].offsetWidth + 15;
+function moveSliderToRight(event) {
+
     state.count = state.count + 1;
 
-    sliderItems.forEach(item => {
+    const exactSlider = event.target.closest('.slider__parent');
+    const exactSliderItems = exactSlider.querySelectorAll('.category__slider .slider .news__item');
+    const width = exactSliderItems[0].offsetWidth + 15;
+    console.log('COUNTER', state.count)
+    const exactNext = exactSlider.querySelector('.js-next');
+    console.log(exactNext, 'NEXT');
+    const exactPrev = exactSlider.querySelector('.js-prev');
+    console.log(exactPrev, 'PREV');
+
+    exactSliderItems.forEach(item => {
         item.style.transform = `translateX(-${width * state.count}px)`
     })
-    state.count > 0 && (prev.className = prev.className.replace('slider__btn--disabled', ''));
-    state.count >= 3 && (next.className += 'slider__btn--disabled');
+    state.count > 0 && (exactPrev.className = exactPrev.className.replace('slider__btn--disabled', ''));
+    state.count >= 3 && (exactNext.className += 'slider__btn--disabled');
 }
 
 function moveSliderToLeft() {
-    const sliderItems = document.querySelectorAll('.slider .news__item');
-    const width = sliderItems[0].offsetWidth + 15
     state.count = state.count -1;
 
-    sliderItems.forEach(item => {
+    const exactSlider = event.target.closest('.slider__parent');
+    const exactSliderItems = exactSlider.querySelectorAll('.category__slider .slider .news__item');
+    const width = exactSliderItems[0].offsetWidth + 15;
+    console.log('COUNTER', state.count)
+    const exactPrev = exactSlider.querySelector('.js-prev');
+    console.log(exactPrev, 'PREV');
+    const exactNext = exactSlider.querySelector('.js-next');
+    console.log(exactNext, 'NEXT');
+
+
+    exactSliderItems.forEach(item => {
         item.style.transform = `translateX(-${width * state.count}px)`
     })
-    state.count === 0 && (prev.className += 'slider__btn--disabled');
-    state.count < 3 && (next.className = next.className.replace('slider__btn--disabled', ''));
+    state.count === 0 && (exactPrev.className += 'slider__btn--disabled');
+    state.count < 3 && (exactNext.className = exactNext.className.replace('slider__btn--disabled', ''));
 }
 
 // go back to main categories view
@@ -79,6 +90,9 @@ function goBackToCategoriesMain() {
     categoriesAll.innerHTML = '';
     const categoriesDiv = document.querySelector('#categories');
     categoriesDiv.className = categoriesDiv.className.replace('hide', '');
+    state.activeCategory.active = false;
+    state.activeCategory.category = '';
+    console.log('STATE AFTER BEIGN GO BACK', state.activeCategory);
 }
 
 export { addLoadedClass, onTabClick, changeBtnClass, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain };
