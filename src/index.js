@@ -16,14 +16,16 @@ const countries = [
     }
 ]
 
-const categories = ['business', 'sport'];
+const categories = ['business', 'sport', 'science'];
+
+function setSliderCounter() {
+    return categories.map(c => {return {count: 0}})
+}
 
 let state = {
     news: [],
     country: countries[0],
     term: '',
-    business: [],
-    count: 0,
     activeTab: {
         active: true,
         tab: 'news',
@@ -31,7 +33,8 @@ let state = {
     activeCategory: {
         active: false,
         category: ''
-    }
+    },
+    sliderCounter: setSliderCounter()
 }
 
 const usBtn = document.querySelector('.js-us');
@@ -72,6 +75,10 @@ async function onChangeCountry(event) {
     const news = await newsService.getByCountry(state.country.key);
     state.news = news;
 
+    //reset sldier counter to zero on country change
+    state.sliderCounter = setSliderCounter();
+    console.log(state.sliderCounter, 'FROM ON COUNTRY CHANGE');
+
     // update all templates depending on active tab, no need to render all at once
     // switch za active page
     switch(state.activeTab.tab) {
@@ -83,12 +90,13 @@ async function onChangeCountry(event) {
             updateCategoriesInDOM();
             console.log('CATEGORIES SWITCH');
             break;
+        case 'search':
+            updateSearchInDOM();
+            console.log('SEARCH SWITCH');
     }
 
     // switch when one category with all news is open to change country
     switch(state.activeCategory.active) {
-        // case true:
-        //     console.log('RADIM BREEE')
         case 'business':
                 openAllCategoryNews(event);
                 console.log('BUSINESS NEWS IN CATEGORIES ALL SWITCH');
@@ -105,7 +113,6 @@ async function onChangeCountry(event) {
     attachNewsPopupListener();
     // update styles that are dependant on state
     // updateCountryButtonsInDOM()
-
 }
 
 // categories functionality
@@ -162,10 +169,10 @@ function renderByCategory(resultsForAllCategories) {
         <h2>Top 5 news by categories from ${state.country.name}</h2>
         ${
             resultsForAllCategories.map((r, index, arr) => `
-                <div class="slider__parent">
+                <div class="slider__parent" data-slider="${index}">
                     <h3 class="slider__title">${arr[index][0].category.charAt(0).toUpperCase() + arr[index][0].category.slice(1)}</h3>
-                        <button class="js-prev slider__btn-prev slider__btn--disabled"></button>
-                        <button class="js-next slider__btn-next"></button>
+                        <button class="js-prev slider__btn-prev slider__btn--disabled" data-prev="${index}"></button>
+                        <button class="js-next slider__btn-next" data-next="${index}"></button>
                         <div class="category__slider">
                             <div class="slider">
                                 ${arr[index].slice(0, 5).map((item, index) => newsItem(item, index)).join('')}

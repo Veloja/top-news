@@ -45,42 +45,39 @@ let next = null;
 
 function moveSliderToRight(event) {
 
-    state.count = state.count + 1;
-
+    const counterID = event.target.getAttribute('data-next');
+    state.sliderCounter[counterID].count += 1;
+    const count = state.sliderCounter[counterID].count;
     const exactSlider = event.target.closest('.slider__parent');
     const exactSliderItems = exactSlider.querySelectorAll('.category__slider .slider .news__item');
     const width = exactSliderItems[0].offsetWidth + 15;
-    console.log('COUNTER', state.count)
     const exactNext = exactSlider.querySelector('.js-next');
-    console.log(exactNext, 'NEXT');
     const exactPrev = exactSlider.querySelector('.js-prev');
-    console.log(exactPrev, 'PREV');
 
     exactSliderItems.forEach(item => {
-        item.style.transform = `translateX(-${width * state.count}px)`
+        item.style.transform = `translateX(-${width * count}px)`
     })
-    state.count > 0 && (exactPrev.className = exactPrev.className.replace('slider__btn--disabled', ''));
-    state.count >= 3 && (exactNext.className += 'slider__btn--disabled');
+
+    state.sliderCounter[counterID].count > 0 && (exactPrev.className = exactPrev.className.replace('slider__btn--disabled', ''));
+    state.sliderCounter[counterID].count >= 3 && (exactNext.className += 'slider__btn--disabled');
 }
 
-function moveSliderToLeft() {
-    state.count = state.count -1;
-
+function moveSliderToLeft(event) {
+    const counterID = event.target.getAttribute('data-prev');
+    state.sliderCounter[counterID].count -= 1;
+    const count = state.sliderCounter[counterID].count;
     const exactSlider = event.target.closest('.slider__parent');
     const exactSliderItems = exactSlider.querySelectorAll('.category__slider .slider .news__item');
     const width = exactSliderItems[0].offsetWidth + 15;
-    console.log('COUNTER', state.count)
     const exactPrev = exactSlider.querySelector('.js-prev');
-    console.log(exactPrev, 'PREV');
     const exactNext = exactSlider.querySelector('.js-next');
-    console.log(exactNext, 'NEXT');
-
 
     exactSliderItems.forEach(item => {
-        item.style.transform = `translateX(-${width * state.count}px)`
+        item.style.transform = `translateX(-${width * count}px)`
     })
-    state.count === 0 && (exactPrev.className += 'slider__btn--disabled');
-    state.count < 3 && (exactNext.className = exactNext.className.replace('slider__btn--disabled', ''));
+
+    state.sliderCounter[counterID].count === 0 && (exactPrev.className += 'slider__btn--disabled');
+    state.sliderCounter[counterID].count < 3 && (exactNext.className = exactNext.className.replace('slider__btn--disabled', ''));
 }
 
 // go back to main categories view
