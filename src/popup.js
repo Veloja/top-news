@@ -1,12 +1,11 @@
 function displayPopup(title, img, desc) {
+    console.log('DESC', desc);
     const popup = document.createElement('div');
     popup.className += 'popup'
     popup.innerHTML = `
         <div class="popup__wrap">
-            <h5 class="popup__title">${title}</h5>
-            <div class="popup__image" style="background-image: url('${img}')">
-               
-            </div>
+            ${titleText(title)}
+            <div class="popup__image" ${bgImage(img)}></div>
             ${descriptionParagraph(desc)}
             <button class="btn popupClose">back</button>
         </div>
@@ -18,6 +17,14 @@ function displayPopup(title, img, desc) {
 
 const descriptionParagraph = (text) => {
     return text ? `<p class="popup__desc">${text}</p>` : '';
+}
+
+const titleText = (title) => {
+    return title ? `<h5 class="popup__title">${title}</h5>` : '';
+}
+
+const bgImage = (img) => {
+    return img ? `style="background-image: url('${img}')"` : '';
 }
 
 let backBtn = ''

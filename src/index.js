@@ -209,7 +209,6 @@ function attachCategoryAllNewsPopupListener() {
 }
 
 function attachSearchPopupListener() {
-    console.log('fromSEARCH');
     const items = document.querySelectorAll('.filtered__news .news__item-link');
     items.forEach(i => i.addEventListener('click', clickedItem))
 }
@@ -222,12 +221,11 @@ function clickedItem(event) {
 }
 
 function openPopups(exactItem) {
-    console.log('exactItem', exactItem)
     const title = exactItem.querySelector('.news__item-title').innerHTML;
     const styleAttr = exactItem.querySelector('.news__item-image').getAttribute('style');
     const imgUrl = styleAttr.split('\'');
     const img = imgUrl[1];
-    const desc = exactItem.querySelector('.news__item-desc');
+    const desc = exactItem.querySelector('.news__item-desc').innerHTML;
     displayPopup(title, img, desc);
 }
 
