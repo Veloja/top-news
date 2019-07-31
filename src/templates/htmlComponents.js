@@ -5,14 +5,14 @@ export const newsItem = (item, index) => {
         <div class="news__item" data-item="${index}" type="button">
             <h3 class="news__item-title">${item.title}</h3>
             <div class="news__item-image" style="background-image: url('${item.urlToImage !== null ? item.urlToImage : 'https://via.placeholder.com/150/0000FF/808080?Text=PLACEHOLDER.com'}')"></div>
-            <p class="news__item-desc">${item.description === null ? 'No text available, sorry!' : item.description}</p>
+            <p class="news__item-desc">${item.description === null || item.description === '' ? 'No text available, sorry!' : item.description}</p>
             <p class="news__item-content">${item.content}</p>
-            <a class="news__item-link" href="javascript:;">Read More </a>
+            <a class="news__item-link" href="javascript:;">Read More</a>
         </div>
     `
 }
 
-export const renderSearch = (state) =>  {
+export const renderSearch = (state) => {
     search.innerHTML = `
         <h2 class="news__title">Search Top News by ${state.country.name}</h2>
         <div class="search-input__wrap">
@@ -42,3 +42,21 @@ export function renderByCategory(resultsForAllCategories, state) {
             }
         `
     }
+
+export function renderAllNewsForCategory(state, allNewsForCategory) {
+    const categoriesAll = document.querySelector('.categories__all');
+    categoriesAll.innerHTML = `
+        <h2 class="category-all-news__title">All news from ${state.country.name} for ${state.activeCategory.category} category...</h2>
+        <button class="category-all__btn js-categories-btn btn">go back</button>
+        <div class="category-all-news__holder">
+            ${allNewsForCategory.map((item, index) => newsItem(item, index)).join('')}
+        </div>
+    `
+}
+
+export function updateNewsInDom(state, newsTitle) {
+    newsTitle.innerHTML = `All news from ${state.country.name}`;
+    news.innerHTML = `
+        ${state.news.map((item, index) => newsItem(item, index)).join('')}
+    `
+}

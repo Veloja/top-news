@@ -79,12 +79,12 @@ function moveSliderToLeft(event) {
 
 // go back to main categories view
 function goBackToCategoriesMain() {
+    state.activeCategory.active = false;
     const categoriesAll = document.querySelector('.categories__all');
     categoriesAll.className = categoriesAll.className.replace('open', '');
     categoriesAll.innerHTML = '';
     const categoriesDiv = document.querySelector('#categories');
     categoriesDiv.className = categoriesDiv.className.replace('hide', '');
-    state.activeCategory.active = false;
     state.activeCategory.category = '';
 }
 

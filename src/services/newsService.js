@@ -1,5 +1,5 @@
 const endpoint = 'https://newsapi.org/v2/top-headlines?';
-const apiKey = '7d853cd5ff4c45c185ed44a5e0c547e4';
+const apiKey = '4252673f50d24ca9bf20ae9a136edab5';
 
 export const getByCountry = async (country) => {
     const response = await fetch(`${endpoint}country=${country}&apiKey=${apiKey}`);

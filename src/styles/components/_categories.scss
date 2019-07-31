@@ -17,9 +17,6 @@
 }
 
 .categories__all {
-    display: flex;
-    flex-wrap: wrap;
-    background-color: $white;
     &.open {
         display: block;
     }
@@ -56,4 +53,5 @@
 
 .category-all__btn {
     margin-bottom: 15px;
+    display: block;
 }
