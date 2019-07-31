@@ -1,8 +1,8 @@
 import './styles/main.scss';
 
 import { addLoadedClass, onTabClick, changeBtnClass, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain } from './domJS/domJS';
-import { newsItem, renderSearch } from './templates/htmlComponents';
-import { clickedItem } from './popup';
+import { newsItem, renderSearch, renderByCategory } from './templates/htmlComponents';
+import { attachNewsPopupListener, attachCategoriesPopupListener, attachCategoryAllNewsPopupListener, attachSearchPopupListener } from './popup';
 import * as newsService from './services/newsService';
 
 const countries = [
@@ -36,16 +36,22 @@ let state = {
     },
     sliderCounter: setSliderCounter()
 }
-
+// tab elements
 const usBtn = document.querySelector('.js-us');
 const gbBtn = document.querySelector('.js-gb');
-
+const searchBTN = document.querySelector('.js-search');
+const categoriesBTN = document.querySelector('.js-categories');
+const newsBTN = document.querySelector('.js-top-news');
+// dom elements
 const news = document.querySelector('.news__wrap');
 const newsTitle = document.querySelector('.news__title');
-
-const categoriesWrapper = document.querySelector('.categories');
-
-
+// tab listeners
+usBtn.addEventListener('click', updateDom);
+gbBtn.addEventListener('click', updateDom);
+searchBTN.addEventListener('click', updateDom);
+categoriesBTN.addEventListener('click', updateDom);
+newsBTN.addEventListener('click', updateDom);
+// country listeners
 usBtn.addEventListener('click', onChangeCountry);
 gbBtn.addEventListener('click', onChangeCountry);
 
@@ -66,20 +72,13 @@ function setCountToZero() {
     state.count = 0;
 }
 
-// api for top news and search
-async function onChangeCountry(event) {
-    // change country state on action
-    setCountry(event);
-
+async function updateDom() {
     // fetch news data
     const news = await newsService.getByCountry(state.country.key);
     state.news = news;
-
-    //reset sldier counter to zero on country change
+    //reset slider counter to zero on country change
     state.sliderCounter = setSliderCounter();
-    console.log(state.sliderCounter, 'FROM ON COUNTRY CHANGE');
-
-    // update all templates depending on active tab, no need to render all at once
+    // update all templates depending on active tab or country, no need to render all at once
     // switch za active page
     switch(state.activeTab.tab) {
         case 'news':
@@ -91,29 +90,50 @@ async function onChangeCountry(event) {
             console.log('CATEGORIES SWITCH');
             break;
         case 'search':
-            updateSearchInDOM();
+            const searchNews = await newsService.getByCountryAndQuery(state.country.key, state.term);;
+            updateSearchInDOM(searchNews);
             console.log('SEARCH SWITCH');
+            break;
     }
-
-    // switch when one category with all news is open to change country
-    switch(state.activeCategory.active) {
-        case 'business':
-                openAllCategoryNews(event);
-                console.log('BUSINESS NEWS IN CATEGORIES ALL SWITCH');
-                break;
-        case 'sport':
-                openAllCategoryNews(event);
-                console.log('SPORT NEWS IN CATEGORIES ALL SWITCH');
-                break;
-    }
-
-    updateSearchInDOM();
-
     // attach listeners to new dom elements
     attachNewsPopupListener();
-    // update styles that are dependant on state
-    // updateCountryButtonsInDOM()
 }
+
+// api for top news and search
+function onChangeCountry(event) {
+    // change country state on action
+    setCountry(event);
+}
+
+// SEARCH IN DOM
+function updateSearchInDOM(searchNews) {
+    renderSearch(state);
+    attachKeyupEventListener();
+
+    const specificNewsWrap = document.querySelector('.filtered__news');
+    specificNewsWrap.innerHTML = `${searchNews.map((item, index) => newsItem(item, index)).join('')}`;
+    attachSearchPopupListener();
+}
+function attachKeyupEventListener() {
+    const search = document.querySelector('.search__input');
+    search.addEventListener('keyup', getSpecificNewsByQuery);
+}
+var timer;
+async function getSpecificNewsByQuery(event) {
+    state.term = event.target.value;
+
+    clearTimeout(timer);
+    timer = setTimeout(async() => {
+        await updateSearchItems(state.term);
+    }, 500);
+}
+async function updateSearchItems(text) {
+    const searchNews = await newsService.getByCountryAndQuery(state.country.key, text);
+    const specificNewsWrap = document.querySelector('.filtered__news');
+    specificNewsWrap.innerHTML = `${searchNews.map((item, index) => newsItem(item, index)).join('')}`;
+    attachSearchPopupListener();
+}
+
 
 // categories functionality
 const categoriesBtn = document.querySelector('.js-categories');
@@ -123,11 +143,11 @@ function updateCategoriesInDOM() {
     fetchAllCategories();
 }
 async function fetchAllCategories() {
-    const resultsForAllCategories = await Promise.all(categories.map( async (c, index, arr) => {
-        return await newsService.getByCountryAndCategory(state.country.key, arr[index]);
+    const resultsForAllCategories = await Promise.all(categories.map( async (c) => {
+        return await newsService.getByCountryAndCategory(state.country.key, c);
     }));
 
-    renderByCategory(resultsForAllCategories);
+    renderByCategory(resultsForAllCategories, state);
 
     attachCategoriesPopupListener();
 
@@ -164,78 +184,13 @@ async function openAllCategoryNews(event) {
     state.activeCategory.active = true;
 }
 
-function renderByCategory(resultsForAllCategories) {
-    categoriesWrapper.innerHTML = `
-        <h2>Top 5 news by categories from ${state.country.name}</h2>
-        ${
-            resultsForAllCategories.map((r, index, arr) => `
-                <div class="slider__parent" data-slider="${index}">
-                    <h3 class="slider__title">${arr[index][0].category.charAt(0).toUpperCase() + arr[index][0].category.slice(1)}</h3>
-                        <button class="js-prev slider__btn-prev slider__btn--disabled" data-prev="${index}"></button>
-                        <button class="js-next slider__btn-next" data-next="${index}"></button>
-                        <div class="category__slider">
-                            <div class="slider">
-                                ${arr[index].slice(0, 5).map((item, index) => newsItem(item, index)).join('')}
-                            </div>
-                        </div>
-                        <div id="${arr[index][0].category}"></div>
-                </div>
-            `).join('')
-        }
-    `
-}
-
 // NEWS IN DOM
 function updateNewsInDom() {
     newsTitle.innerHTML = `All news from ${state.country.name}`;
-    // updateCountryButtonStyles(state.country);
 
     news.innerHTML = `
         ${state.news.map((item, index) => newsItem(item, index)).join('')}
     `
-}
-// SEARCH IN DOM
-function updateSearchInDOM() {
-    renderSearch(state);
-    attachKeyupEventListener();
-}
-function attachKeyupEventListener() {
-    const search = document.querySelector('.search__input');
-    search.addEventListener('keyup', getSpecificNewsByQuery);
-}
-async function getSpecificNewsByQuery(event) {
-    state.term = event.target.value;
-
-    let timer = 0;
-    clearTimeout(timer);
-    timer = setTimeout(async() => {
-        const fetchedNewsByQueryArr = await newsService.getByCountryAndQuery(state.country.key, state.term);
-        const specificNewsWrap = document.querySelector('.filtered__news');
-        specificNewsWrap.innerHTML = `${fetchedNewsByQueryArr.map((item, index) => newsItem(item, index)).join('')}
-        `
-        attachSearchPopupListener();
-    }, 500);
-}
-
-// POPUP listeners
-function attachNewsPopupListener() {
-    const items = document.querySelectorAll('.news__item-link');
-    items.forEach(i => i.addEventListener('click', clickedItem))
-}
-
-function attachCategoriesPopupListener() {
-    const items = document.querySelectorAll('.slider__parent .news__item-link');
-    items.forEach(i => i.addEventListener('click', clickedItem))
-}
-
-function attachCategoryAllNewsPopupListener() {
-    const items = document.querySelectorAll('.categories__all .news__item-link');
-    items.forEach(i => i.addEventListener('click', clickedItem))
-}
-
-function attachSearchPopupListener() {
-    const items = document.querySelectorAll('.filtered__news .news__item-link');
-    items.forEach(i => i.addEventListener('click', clickedItem));
 }
 
 export { state }
