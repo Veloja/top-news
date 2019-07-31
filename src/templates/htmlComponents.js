@@ -4,9 +4,8 @@ export const newsItem = (item, index) => {
     return `
         <div class="news__item" data-item="${index}" type="button">
             <h3 class="news__item-title">${item.title}</h3>
-            <div class="news__item-image" style="background-image: url('${item.urlToImage}')">
-            </div>
-            <p class="news__item-desc">${item.description}</p>
+            <div class="news__item-image" style="background-image: url('${item.urlToImage !== null ? item.urlToImage : 'https://via.placeholder.com/150/0000FF/808080?Text=PLACEHOLDER.com'}')"></div>
+            <p class="news__item-desc">${item.description === null ? 'No text available, sorry!' : item.description}</p>
             <a class="news__item-link" href="javascript:;">Read More </a>
         </div>
     `
@@ -24,7 +23,7 @@ export const renderSearch = (state) =>  {
 
 export function renderByCategory(resultsForAllCategories, state) {
         categoriesWrapper.innerHTML = `
-            <h2>Top 5 news by categories from ${state.country.name}</h2>
+            <h2 class="news__title">Top 5 news by categories from ${state.country.name}</h2>
             ${
                 resultsForAllCategories.map((r, index, arr) => `
                     <div class="slider__parent" data-slider="${index}">

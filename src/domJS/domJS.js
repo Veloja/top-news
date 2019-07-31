@@ -5,6 +5,7 @@ const addLoadedClass = window.addEventListener('load', () => {
     body.classList.add('loaded');
 });
 
+// TABS
 const tabs = document.querySelector('.header__tabs');
 tabs.addEventListener('click', onTabClick);
 function onTabClick(event) {
@@ -12,13 +13,12 @@ function onTabClick(event) {
     const activeTabs = document.querySelectorAll('.header__tabs-btn--active');
     removeCertainClass(activeTabs, 'header__tabs-btn--active');
     event.target.className += ' header__tabs-btn--active';
-
+    //get clicked tab name
     const id = event.target.getAttribute('data-tab');
 
     const contents = document.querySelectorAll('.content');
     removeCertainClass(contents, 'content--active');
     document.getElementById(id).className += ' content--active';
-
     // set state of active tab
     state.activeTab.tab = id;
     // reset term in state on tab change
@@ -86,7 +86,6 @@ function goBackToCategoriesMain() {
     categoriesDiv.className = categoriesDiv.className.replace('hide', '');
     state.activeCategory.active = false;
     state.activeCategory.category = '';
-    console.log('STATE AFTER BEIGN GO BACK', state.activeCategory);
 }
 
 export { addLoadedClass, onTabClick, changeBtnClass, moveSliderToLeft, moveSliderToRight, goBackToCategoriesMain };

@@ -60,6 +60,9 @@ gbBtn.addEventListener('click', changeBtnClass);
 usBtn.addEventListener('click', setCountToZero);
 gbBtn.addEventListener('click', setCountToZero);
 
+// usBtn.addEventListener('click', updateAllCategoryNewsState);
+// gbBtn.addEventListener('click', updateAllCategoryNewsState);
+
 gbBtn.click();
 
 function setCountry(event) {
@@ -78,7 +81,6 @@ async function updateDom() {
     //reset slider counter to zero on country change
     state.sliderCounter = setSliderCounter();
     // update all templates depending on active tab or country, no need to render all at once
-    // switch za active page
     switch(state.activeTab.tab) {
         case 'news':
             updateNewsInDom();
@@ -95,10 +97,12 @@ async function updateDom() {
     switch(state.activeCategory.active) {
         case state.activeCategory.category === 'business':
             const allBusinessNews = await newsService.getByCountryAndCategory(state.country.key, state.activeCategory.category);
+            // update dom
             console.log(allBusinessNews, 'BUSINESS NEWS SWITCH');
             break;
         case state.activeCategory.category === 'sport':
             const allSportNews = await newsService.getByCountryAndCategory(state.country.key, state.activeCategory.category);
+            // update dom
             console.log(allSportNews, 'SPORT NEWS SWITCH');
             break;
         case state.activeCategory.category === 'science':
@@ -109,7 +113,6 @@ async function updateDom() {
     // attach listeners to new dom elements
     attachNewsPopupListener();
 }
-
 // SEARCH IN DOM
 function updateSearchInDOM(searchNews) {
     renderSearch(state);
@@ -137,9 +140,7 @@ async function updateSearchItems(text) {
     const specificNewsWrap = document.querySelector('.filtered__news');
     specificNewsWrap.innerHTML = `${searchNews.map((item, index) => newsItem(item, index)).join('')}`;
     attachSearchPopupListener();
-}
-
-// categories functionality
+}// categories functionality
 const categoriesBtn = document.querySelector('.js-categories');
 categoriesBtn.addEventListener('click', updateCategoriesInDOM);
 
