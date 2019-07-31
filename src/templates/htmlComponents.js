@@ -6,6 +6,7 @@ export const newsItem = (item, index) => {
             <h3 class="news__item-title">${item.title}</h3>
             <div class="news__item-image" style="background-image: url('${item.urlToImage !== null ? item.urlToImage : 'https://via.placeholder.com/150/0000FF/808080?Text=PLACEHOLDER.com'}')"></div>
             <p class="news__item-desc">${item.description === null ? 'No text available, sorry!' : item.description}</p>
+            <p class="news__item-content">${item.content}</p>
             <a class="news__item-link" href="javascript:;">Read More </a>
         </div>
     `
@@ -13,7 +14,7 @@ export const newsItem = (item, index) => {
 
 export const renderSearch = (state) =>  {
     search.innerHTML = `
-        <h2>Search Top News by ${state.country.name}</h2>
+        <h2 class="news__title">Search Top News by ${state.country.name}</h2>
         <div class="search-input__wrap">
             <input class="search__input" type="text" value="${state.term}" placeholder="Search top news" />
         </div>

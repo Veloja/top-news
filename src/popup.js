@@ -1,11 +1,11 @@
-function displayPopup(title, img, desc) {
+function displayPopup(title, img, desc, content) {
     const popup = document.createElement('div');
     popup.className += 'popup'
     popup.innerHTML = `
         <div class="popup__wrap">
             <h5 class="popup__title">${title}</h5>
             <div class="popup__image" ${bgImage(img)}></div>
-            <p class="popup__desc">${desc}</p>
+            <p class="popup__desc">${content}</p>
             <button class="btn popupClose">back</button>
         </div>
     `
@@ -36,7 +36,8 @@ function openPopups(exactItem) {
     const imgUrl = styleAttr.split('\'');
     const img = imgUrl[1];
     const desc = exactItem.querySelector('.news__item-desc').innerHTML;
-    displayPopup(title, img, desc);
+    const content = exactItem.querySelector('.news__item-content').innerHTML;
+    displayPopup(title, img, desc, content);
 }
 
 // POPUP listeners

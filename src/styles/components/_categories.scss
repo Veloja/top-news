@@ -46,9 +46,14 @@
 
 .category-all-news__title {
     font-family: $font-default;
+    margin-bottom: 15px;
 }
 
 .category-all-news__holder {
     display: flex;
     flex-wrap: wrap;
+}
+
+.category-all__btn {
+    margin-bottom: 15px;
 }

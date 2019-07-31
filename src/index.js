@@ -24,7 +24,6 @@ function setSliderCounter() {
 let state = {
     news: [],
     country: countries[0],
-    // term: '',
     activeTab: {
         active: true,
         tab: 'news',
@@ -44,15 +43,16 @@ const newsBTN = document.querySelector('.js-top-news');
 // dom elements
 const news = document.querySelector('.news__wrap');
 const newsTitle = document.querySelector('.news__title');
+
+// country listeners
+usBtn.addEventListener('click', onChangeCountry);
+gbBtn.addEventListener('click', onChangeCountry);
 // tab listeners
 usBtn.addEventListener('click', updateDom);
 gbBtn.addEventListener('click', updateDom);
 searchBTN.addEventListener('click', updateDom);
 categoriesBTN.addEventListener('click', updateDom);
 newsBTN.addEventListener('click', updateDom);
-// country listeners
-usBtn.addEventListener('click', onChangeCountry);
-gbBtn.addEventListener('click', onChangeCountry);
 
 usBtn.addEventListener('click', changeBtnClass);
 gbBtn.addEventListener('click', changeBtnClass);
@@ -60,15 +60,21 @@ gbBtn.addEventListener('click', changeBtnClass);
 usBtn.addEventListener('click', setCountToZero);
 gbBtn.addEventListener('click', setCountToZero);
 
-// usBtn.addEventListener('click', updateAllCategoryNewsState);
-// gbBtn.addEventListener('click', updateAllCategoryNewsState);
+usBtn.addEventListener('click', setCountry);
+gbBtn.addEventListener('click', setCountry);
 
 gbBtn.click();
+// change country state based on action
+function onChangeCountry(event) {
+    setCountry(event);
+}
 
 function setCountry(event) {
     const countryKey = event.target.getAttribute('data-cn');
     state.country = countries.find(c => c.key === countryKey);
+    console.log('SET COUNTRY FN', state.conutry)
 }
+
 
 function setCountToZero() {
     state.count = 0;
@@ -81,14 +87,19 @@ async function updateDom() {
     //reset slider counter to zero on country change
     state.sliderCounter = setSliderCounter();
     // update all templates depending on active tab or country, no need to render all at once
+    console.log('FROM UPDATE DOM', state.country);
     switch(state.activeTab.tab) {
         case 'news':
             updateNewsInDom();
+            console.log('from NEWS TAB', state.news);
+            console.log('COUNTRY', state.country);
             break;
         case 'categories':
+            console.log('categories');
             updateCategoriesInDOM();
             break;
         case 'search':
+            console.log('search');
             const searchNews = await newsService.getByCountryAndQuery(state.country.key, state.term);;
             updateSearchInDOM(searchNews);
             break;
@@ -98,16 +109,16 @@ async function updateDom() {
         case state.activeCategory.category === 'business':
             const allBusinessNews = await newsService.getByCountryAndCategory(state.country.key, state.activeCategory.category);
             // update dom
-            console.log(allBusinessNews, 'BUSINESS NEWS SWITCH');
+            // console.log(allBusinessNews, 'BUSINESS NEWS SWITCH');
             break;
         case state.activeCategory.category === 'sport':
             const allSportNews = await newsService.getByCountryAndCategory(state.country.key, state.activeCategory.category);
             // update dom
-            console.log(allSportNews, 'SPORT NEWS SWITCH');
+            // console.log(allSportNews, 'SPORT NEWS SWITCH');
             break;
         case state.activeCategory.category === 'science':
             const allScienceNews = await newsService.getByCountryAndCategory(state.country.key, state.activeCategory.category);
-            console.log(allScienceNews, 'SPORT NEWS SWITCH');
+            // console.log(allScienceNews, 'SPORT NEWS SWITCH');
             break;
     }
     // attach listeners to new dom elements
@@ -140,7 +151,8 @@ async function updateSearchItems(text) {
     const specificNewsWrap = document.querySelector('.filtered__news');
     specificNewsWrap.innerHTML = `${searchNews.map((item, index) => newsItem(item, index)).join('')}`;
     attachSearchPopupListener();
-}// categories functionality
+}
+// categories functionality
 const categoriesBtn = document.querySelector('.js-categories');
 categoriesBtn.addEventListener('click', updateCategoriesInDOM);
 
@@ -175,7 +187,7 @@ async function openAllCategoryNews(event) {
 
     categoriesAll.innerHTML = `
         <h2 class="category-all-news__title">All news from for ${state.country.name} category...</h2>
-        <button class="js-categories-btn btn">go back</button>
+        <button class="category-all__btn js-categories-btn btn">go back</button>
         <div class="category-all-news__holder">
             ${allNewsForCategory.map((item, index) => newsItem(item, index)).join('')}
         </div>
@@ -188,7 +200,6 @@ async function attachClickedCategoryListeners(clickedCategorytitle) {
     categoryBtn.addEventListener('click', goBackToCategoriesMain);
     state.activeCategory.category = clickedCategorytitle;
     state.activeCategory.active = true;
-    console.log('ACTIVE CATEGORY', state.activeCategory);
     attachCategoryAllNewsPopupListener();
     return await updateDom()
 }
@@ -196,14 +207,12 @@ async function attachClickedCategoryListeners(clickedCategorytitle) {
 // NEWS IN DOM
 function updateNewsInDom() {
     newsTitle.innerHTML = `All news from ${state.country.name}`;
+    console.log('state.country NAME', state.country.name);
     news.innerHTML = `
         ${state.news.map((item, index) => newsItem(item, index)).join('')}
     `
 }
 
-// change country state based on action
-function onChangeCountry(event) {
-    setCountry(event);
-}
+
 
 export { state }
