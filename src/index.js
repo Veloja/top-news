@@ -166,12 +166,12 @@ async function openAllCategoryNews(event) {
 async function renderOneCategoryByTitle(title) {
     const allNewsForCategory = await newsService.getByCountryAndCategory(state.country.key, title);
 
-    if(state.activeCategory.active) {
+    // if(state.activeCategory.active) {
         const categoriesAll = document.querySelector('.categories__all');
         categoriesAll.className += ' open'
         const categoriesDiv = document.querySelector('#categories');
         categoriesDiv.className += ' hide'
-    }
+    // }
 
     renderAllNewsForCategory(state, allNewsForCategory)
     attachClickedCategoryListeners(title);
