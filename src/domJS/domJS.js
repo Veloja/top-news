@@ -23,7 +23,6 @@ function onTabClick(event) {
     state.activeTab.tab = id;
     // reset term in state on tab change
     state.term = '';
-
 }
 
 const countries = document.querySelector('.header__countries');

@@ -17,7 +17,6 @@ const countries = [
 ]
 
 const categories = ['business', 'sport', 'science'];
-
 function setSliderCounter() {
     return categories.map(c => {return {count: 0}})
 }
@@ -25,7 +24,7 @@ function setSliderCounter() {
 let state = {
     news: [],
     country: countries[0],
-    term: '',
+    // term: '',
     activeTab: {
         active: true,
         tab: 'news',
@@ -83,26 +82,32 @@ async function updateDom() {
     switch(state.activeTab.tab) {
         case 'news':
             updateNewsInDom();
-            console.log('NEWS SWITCH');
             break;
         case 'categories':
             updateCategoriesInDOM();
-            console.log('CATEGORIES SWITCH');
             break;
         case 'search':
             const searchNews = await newsService.getByCountryAndQuery(state.country.key, state.term);;
             updateSearchInDOM(searchNews);
-            console.log('SEARCH SWITCH');
+            break;
+    }
+
+    switch(state.activeCategory.active) {
+        case state.activeCategory.category === 'business':
+            const allBusinessNews = await newsService.getByCountryAndCategory(state.country.key, state.activeCategory.category);
+            console.log(allBusinessNews, 'BUSINESS NEWS SWITCH');
+            break;
+        case state.activeCategory.category === 'sport':
+            const allSportNews = await newsService.getByCountryAndCategory(state.country.key, state.activeCategory.category);
+            console.log(allSportNews, 'SPORT NEWS SWITCH');
+            break;
+        case state.activeCategory.category === 'science':
+            const allScienceNews = await newsService.getByCountryAndCategory(state.country.key, state.activeCategory.category);
+            console.log(allScienceNews, 'SPORT NEWS SWITCH');
             break;
     }
     // attach listeners to new dom elements
     attachNewsPopupListener();
-}
-
-// api for top news and search
-function onChangeCountry(event) {
-    // change country state on action
-    setCountry(event);
 }
 
 // SEARCH IN DOM
@@ -134,7 +139,6 @@ async function updateSearchItems(text) {
     attachSearchPopupListener();
 }
 
-
 // categories functionality
 const categoriesBtn = document.querySelector('.js-categories');
 categoriesBtn.addEventListener('click', updateCategoriesInDOM);
@@ -148,7 +152,6 @@ async function fetchAllCategories() {
     }));
 
     renderByCategory(resultsForAllCategories, state);
-
     attachCategoriesPopupListener();
 
     const next = document.querySelectorAll('.js-next');
@@ -156,7 +159,6 @@ async function fetchAllCategories() {
     next.forEach(n => n.addEventListener('click', moveSliderToRight));
     prev.forEach(n => n.addEventListener('click', moveSliderToLeft));
     let sliderTitle = document.querySelectorAll('.categories .slider__title');
-
     sliderTitle.forEach(t => t.addEventListener('click', openAllCategoryNews));
 }
 
@@ -177,20 +179,30 @@ async function openAllCategoryNews(event) {
             ${allNewsForCategory.map((item, index) => newsItem(item, index)).join('')}
         </div>
     `
+    attachClickedCategoryListeners(clickedCategorytitle);
+}
+
+async function attachClickedCategoryListeners(clickedCategorytitle) {
     const categoryBtn = document.querySelector('.js-categories-btn');
     categoryBtn.addEventListener('click', goBackToCategoriesMain);
-    attachCategoryAllNewsPopupListener();
     state.activeCategory.category = clickedCategorytitle;
     state.activeCategory.active = true;
+    console.log('ACTIVE CATEGORY', state.activeCategory);
+    attachCategoryAllNewsPopupListener();
+    return await updateDom()
 }
 
 // NEWS IN DOM
 function updateNewsInDom() {
     newsTitle.innerHTML = `All news from ${state.country.name}`;
-
     news.innerHTML = `
         ${state.news.map((item, index) => newsItem(item, index)).join('')}
     `
+}
+
+// change country state based on action
+function onChangeCountry(event) {
+    setCountry(event);
 }
 
 export { state }
