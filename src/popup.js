@@ -47,5 +47,23 @@ function openPopups(exactItem) {
     displayPopup(title, img, desc);
 }
 
+// POPUP listeners
+export function attachNewsPopupListener() {
+    const items = document.querySelectorAll('.news__item-link');
+    items.forEach(i => i.addEventListener('click', clickedItem))
+}
 
-export { clickedItem }
+export function attachCategoriesPopupListener() {
+    const items = document.querySelectorAll('.slider__parent .news__item-link');
+    items.forEach(i => i.addEventListener('click', clickedItem))
+}
+
+export function attachCategoryAllNewsPopupListener() {
+    const items = document.querySelectorAll('.categories__all .news__item-link');
+    items.forEach(i => i.addEventListener('click', clickedItem))
+}
+
+export function attachSearchPopupListener() {
+    const items = document.querySelectorAll('.filtered__news .news__item-link');
+    items.forEach(i => i.addEventListener('click', clickedItem));
+}
