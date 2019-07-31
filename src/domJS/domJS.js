@@ -1,5 +1,4 @@
 import { state } from '../index';
-import { newsItem } from '../templates/htmlComponents';
 
 const body = document.getElementsByTagName('body')[0];
 const addLoadedClass = window.addEventListener('load', () => {
@@ -9,6 +8,7 @@ const addLoadedClass = window.addEventListener('load', () => {
 const tabs = document.querySelector('.header__tabs');
 tabs.addEventListener('click', onTabClick);
 function onTabClick(event) {
+
     const activeTabs = document.querySelectorAll('.header__tabs-btn--active');
     removeCertainClass(activeTabs, 'header__tabs-btn--active');
     event.target.className += ' header__tabs-btn--active';
@@ -20,7 +20,9 @@ function onTabClick(event) {
     document.getElementById(id).className += ' content--active';
 
     // set state of active tab
-    state.activeTab.tab = id
+    state.activeTab.tab = id;
+    // reset term in state on tab change
+    state.term = '';
 
 }
 
@@ -40,11 +42,7 @@ function removeCertainClass(elements, className) {
 }
 
 // SLIDER
-let prev = null;
-let next = null;
-
 function moveSliderToRight(event) {
-
     const counterID = event.target.getAttribute('data-next');
     state.sliderCounter[counterID].count += 1;
     const count = state.sliderCounter[counterID].count;
